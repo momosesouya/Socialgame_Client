@@ -1,0 +1,27 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace GameUtil
+{
+    public class Common
+    {
+        #region エラーコード
+        public const int ErrCode_Auth = 403;
+        #endregion
+
+        #region エラーメッセージ
+        /// <summary>リクエスト失敗</summary>
+        public const string ErrMsg_RequestFailed = "通信に失敗しました。";
+        /// <summary>通信失敗</summary>
+        public const string ErrMsg_RegisterFailed = "登録に失敗しました。";
+        /// <summary>ユーザー名入力エラー</summary>
+        public const string ErrMsg_NameInput = "入力エラーです。";
+        #endregion
+    }
+
+    public class RequestResult
+    {
+        public int result;
+    }
+}
