@@ -5,6 +5,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using Unity.VisualScripting;
 
 
 public class TitleManager : MonoBehaviour
@@ -25,7 +26,6 @@ public class TitleManager : MonoBehaviour
 
     void Awake()
     {
-        
     }
 
     void Start()
@@ -88,6 +88,7 @@ public class TitleManager : MonoBehaviour
             errMsg.text = GameUtil.Common.ErrMsg_NameInput;
             return;
         }
+        StartCoroutine(StopLoding());
 
         registerName.text = inputName.text;
         CloseRegister();
@@ -140,6 +141,12 @@ public class TitleManager : MonoBehaviour
         registerName.text = "";
     }
 
+    IEnumerator StopLoding()
+    {
+        yield return null;
+    }
+
+
     /// <summary>
     /// 起動プロセス
     /// </summary>
@@ -166,7 +173,6 @@ public class TitleManager : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("エラーレスポンス: " + request.downloadHandler.text);
             OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
             confirmPanel.SetActive(false);
             yield break;
@@ -183,10 +189,8 @@ public class TitleManager : MonoBehaviour
         // ユーザーデータ取得(保持)
         usersModel = Users.Get();
 
-
-        Debug.Log("登録完了");
-
         // 登録完了
+        Debug.Log("登録完了");
         isExistAccount = true;
         confirmPanel.SetActive(false);
         registerCompletePanel.SetActive(true);
@@ -204,6 +208,8 @@ public class TitleManager : MonoBehaviour
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
+            OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
+            confirmPanel.SetActive(false);
             startButton.interactable = true;
             yield break;
         }
@@ -222,5 +228,14 @@ public class TitleManager : MonoBehaviour
         public int result;
         public string created_at;
         public string updated_at;
+    }
+
+    public void FinishGameButton()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // ゲームプレイ終了
+#else
+    Application.Quit(); // ゲームプレイ終了
+#endif
     }
 }
