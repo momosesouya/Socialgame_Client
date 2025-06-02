@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine;
 using UnityEngine.Networking;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 
 
 public class TitleManager : MonoBehaviour
@@ -19,13 +18,26 @@ public class TitleManager : MonoBehaviour
     [SerializeField] InputField inputName;
     [SerializeField] TextMeshProUGUI errMsg;
     [SerializeField] TextMeshProUGUI failedMsg;
-    [SerializeField] Text registerName;
+    [SerializeField] TextMeshProUGUI registerName;
 
     UsersModel usersModel;
+    WalletsModel walletsModel;
+
+    Wallets wallets;
+
     bool isExistAccount = false; // アカウントデータが存在するか
 
     void Awake()
     {
+        // SQLiteのファイルチェック
+        string DBPath = Application.dataPath + "/" + GameUtil.Common.DBFileName;
+        if (!File.Exists(DBPath))
+        {
+            using (File.Create(DBPath)) { }
+        }
+        // SQLiteテーブル生成
+        Users.CreateTable();
+        Wallets.CreateTable();
     }
 
     void Start()
@@ -37,22 +49,20 @@ public class TitleManager : MonoBehaviour
 
         // ユーザーデータ取得
         usersModel = Users.Get();
+        walletsModel = Wallets.Get();
         if (usersModel.user_id == null)
         {
             // アカウントなし
+            Debug.Log("ユーザーデータが見つかりません");
             isExistAccount = false;
             UserId.text = "0";
         }
         else
         {
+            Debug.Log("ユーザーデータ取得完了");
             isExistAccount = true;
             UserId.text = usersModel.user_id.ToString();
         }
-    }
-
-    void Update()
-    {
-        
     }
 
     /// <summary>
@@ -83,9 +93,10 @@ public class TitleManager : MonoBehaviour
     public void ConfirmButton()
     {
         // 入力文字数チェック
-        if (inputName.text.Length <= 0 || inputName.text.Length > 12)
+        if (inputName.text.Length <= 0 || inputName.text.Length >= 13)
         {
             errMsg.text = GameUtil.Common.ErrMsg_NameInput;
+            Debug.Log("入力エラーです。");
             return;
         }
         StartCoroutine(StopLoding());
@@ -159,18 +170,10 @@ public class TitleManager : MonoBehaviour
     /// </summary>
     IEnumerator RegisterProcess()
     {
-        if (string.IsNullOrEmpty(registerName.text))
-        {
-            // registerNameが空だったらエラー
-            OpenRegisterFailed(GameUtil.Common.ErrMsg_NameInput);
-            yield break;
-        }
-
         List<IMultipartFormSection> postData = new List<IMultipartFormSection>();
         postData.Add(new MultipartFormDataSection("un", registerName.text));
         UnityWebRequest request = UnityWebRequest.Post(GameUtil.Uri.Register, postData);
         yield return request.SendWebRequest();
-
         if (request.result != UnityWebRequest.Result.Success)
         {
             OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
@@ -178,13 +181,16 @@ public class TitleManager : MonoBehaviour
             yield break;
         }
 
-        // レスポンスのJSONを読み込んでモデルに変換
-        string json = request.downloadHandler.text;
-        RegistResult model = JsonUtility.FromJson<RegistResult>(json);
-        usersModel = model;
+        RegistResult data = JsonUtility.FromJson<RegistResult>(request.downloadHandler.text);
+        if (data.result == GameUtil.Common.ErrCode_DbUpdate)
+        {
+            OpenRegisterFailed(GameUtil.Common.ErrMsg_RegisterFailed);
+            yield break;
+        }
 
-        // 保存
-        Users.RegistUserinfo(usersModel);
+        // SQLiteに登録
+        Users.RegistUserinfo(data);
+        //Wallets.RegistWalletinfo(wallets, usersModel.user_id);
 
         // ユーザーデータ取得(保持)
         usersModel = Users.Get();
@@ -208,15 +214,20 @@ public class TitleManager : MonoBehaviour
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
+            Debug.Log("送信先URL: " + GameUtil.Uri.Login);
+            Debug.Log("送信するUID: " + usersModel.user_id);
+            Debug.Log("通信結果: " + request.result);
+            Debug.Log("レスポンスコード: " + request.responseCode);
+            Debug.Log("レスポンス内容: " + request.downloadHandler.text);
             OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
             confirmPanel.SetActive(false);
             startButton.interactable = true;
             yield break;
         }
-
+        
         // ログイン成功、ホーム画面へ
         Users.SetLastLogin(usersModel.user_id);
-        GameUtil.FadeManager.Instance.LoadScene("Home");
+        GameUtil.FadeManager.Instance.LoadScene("HomeScene");
     }
 
     /// <summary>

@@ -6,7 +6,17 @@ namespace GameUtil
 {
     public class Common
     {
-        #region エラーコード
+        #region
+        /// <summary>SQLiteファイル名</summary>
+        public const string DBFileName = "service.db";
+        #endregion
+
+        #region エラーコード関連
+        /// <summary>バリデーションエラー</summary>
+        public const int ErrCode_DbUpdate = 100;
+        /// <summary>マスターバージョンエラー</summary>
+        public const int ErrCode_MasterVersion = 200;
+        /// <summary>認証エラー</summary>
         public const int ErrCode_Auth = 403;
         #endregion
 
