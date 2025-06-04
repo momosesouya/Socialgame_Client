@@ -11,6 +11,11 @@ namespace GameUtil
         public const string DBFileName = "service.db";
         #endregion
 
+        #region
+        /// <summary>バージョンチェック</summary>
+        public const string SAVE_KEY_MASTER_VERSION = "";
+        #endregion
+
         #region エラーコード関連
         /// <summary>バリデーションエラー</summary>
         public const int ErrCode_DbUpdate = 100;

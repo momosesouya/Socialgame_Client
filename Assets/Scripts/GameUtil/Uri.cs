@@ -14,6 +14,10 @@ namespace GameUtil
         public const string Home = "http://localhost/api/home";
         ///<summary>ウォレット</summary>
         public const string Wallet = "http://localhost/api/home";
+        ///<summary>通貨購入</summary>
+        public const string Buy_Currency = "http://localhost/api/buyCurrency";
+        ///<summary>スタミナ回復</summary>
+        public const string Stamina_Recovery = "http://localhost/api/staminaRecovery";
 
 #elif DEVELOP_SERVER
         ///<summary>ログイン</summary>
