@@ -13,7 +13,7 @@ public class SaveData
 
 public class SaveManager : MonoBehaviour
 {
-    public static SaveManager instance {  get; private set; }
+    public static SaveManager Instance {  get; private set; }
 
     // セーブファイルの名前
     const string FileName = "/savedata.dat";
@@ -27,9 +27,9 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         // シングルトンにする
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -37,6 +37,8 @@ public class SaveManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        
+        CreateSaveData();
     }
 
     // ファイル更新共通準備

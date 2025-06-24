@@ -18,10 +18,10 @@ public class Wallets
     public static void CreateTable()
     {
 
-        string createQuery = "create table if not exists wallets (" +
+        string createQuery = "create table if not exists user_wallets (" +
             "user_id text, " +
-            "free_amount midiumint, " +
-            "paid_amount midiumint, " +
+            "free_amount int, " +
+            "paid_amount int, " +
             "primary key(user_id))";
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         sqlDB.ExecuteQuery(createQuery);
@@ -32,17 +32,27 @@ public class Wallets
     /// </summary>
     public static void RegistWalletinfo(WalletsModel walletsModel, string user_id)
     {
-        string query = "insert or replace into user_wallets(user_id,free_amount,paid_amount,max_amount) values(\"" + user_id + "\"," + walletsModel.free_amount + "," + walletsModel.paid_amount + ")";
+        Debug.Log($"[Wallets] Insert or Replace user_id: {user_id}, free: {walletsModel.free_amount}, paid: {walletsModel.paid_amount}");
+
+        // プリペアードステートメント化
+        string query = "insert or replace into user_wallets(user_id, free_amount, paid_amount) " +
+                        "values (@user_id, @free_amount, @paid_amount)";
+        Dictionary<string, object> param = new Dictionary<string, object>()
+        {
+            {"@user_id", user_id },
+            {"@free_amount", walletsModel.free_amount },
+            {"@paid_amount", walletsModel.paid_amount },
+        };
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
-        sqlDB.ExecuteQuery(query);
+        sqlDB.ExecuteQuery(query, param);
     }
 
     /// <summary>
     /// テーブル取得
     /// </summary>
-    public static WalletsModel Get()
+    public static WalletsModel Get(string user_id)
     {
-        string getQuery = "select * from user_wallets";
+        string getQuery = $"select * from user_wallets where user_id = \"{user_id}\"";
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         DataTable dataTable = sqlDB.ExecuteQuery(getQuery);
         WalletsModel walletsModel = new WalletsModel();

@@ -33,6 +33,12 @@ namespace GameUtil
         /// <summary>ユーザー名入力エラー</summary>
         public const string ErrMsg_NameInput = "入力エラーです。";
         #endregion
+
+        #region
+        /** エラーID */
+        public const string ERROR_DB_UPDATE = "1";
+        public const string ERROR_MASTER_DATA_UPDATE = "2";
+        #endregion
     }
 
     public class RequestResult

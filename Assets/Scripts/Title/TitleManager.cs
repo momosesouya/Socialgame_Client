@@ -22,8 +22,8 @@ public class TitleManager : MonoBehaviour
 
     UsersModel usersModel;
     WalletsModel walletsModel;
+    PaymentShopModel paymentShopModel;
 
-    Wallets wallets;
 
     bool isExistAccount = false; // アカウントデータが存在するか
 
@@ -38,6 +38,7 @@ public class TitleManager : MonoBehaviour
         // SQLiteテーブル生成
         Users.CreateTable();
         Wallets.CreateTable();
+        PaymentShops.CreateShopTable();
     }
 
     void Start()
@@ -49,7 +50,7 @@ public class TitleManager : MonoBehaviour
 
         // ユーザーデータ取得
         usersModel = Users.Get();
-        walletsModel = Wallets.Get();
+        walletsModel = Wallets.Get(usersModel.user_id);
         if (usersModel.user_id == null)
         {
             // アカウントなし
@@ -65,14 +66,22 @@ public class TitleManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+    }
+
     /// <summary>
     /// スタートボタン押下時
     /// </summary>
     public void StartButton()
     {
+        // アカウントがある場合は通常ログイン
         if (isExistAccount)
         {
-            // アカウントがある場合は通常ログイン
+            // ユーザーデータ取得(保持)
+            usersModel = Users.Get();
+            walletsModel = Wallets.Get(usersModel.user_id);
+
             registerPanel.SetActive(false);
             confirmPanel.SetActive(false);
             registerFaildPanel.SetActive(false);
@@ -80,9 +89,9 @@ public class TitleManager : MonoBehaviour
             startButton.interactable = false;
             StartCoroutine(LoginProcess());
         }
+        // アカウントがない場合は登録処理
         else
         {
-            // アカウントがない場合は登録処理
             registerPanel.SetActive(true);
         }
     }
@@ -172,28 +181,9 @@ public class TitleManager : MonoBehaviour
     {
         List<IMultipartFormSection> postData = new List<IMultipartFormSection>();
         postData.Add(new MultipartFormDataSection("un", registerName.text));
-        UnityWebRequest request = UnityWebRequest.Post(GameUtil.Uri.Register, postData);
-        yield return request.SendWebRequest();
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
-            confirmPanel.SetActive(false);
-            yield break;
-        }
-
-        RegistResult data = JsonUtility.FromJson<RegistResult>(request.downloadHandler.text);
-        if (data.result == GameUtil.Common.ErrCode_DbUpdate)
-        {
-            OpenRegisterFailed(GameUtil.Common.ErrMsg_RegisterFailed);
-            yield break;
-        }
-
+        
         // SQLiteに登録
-        Users.RegistUserinfo(data);
-        //Wallets.RegistWalletinfo(wallets, usersModel.user_id);
-
-        // ユーザーデータ取得(保持)
-        usersModel = Users.Get();
+        yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Register, postData, () => {}));
 
         // 登録完了
         Debug.Log("登録完了");
@@ -209,6 +199,12 @@ public class TitleManager : MonoBehaviour
     IEnumerator LoginProcess()
     {
         List<IMultipartFormSection> postData = new List<IMultipartFormSection>();
+        // user_idが存在しなかった場合
+        if (string.IsNullOrEmpty(usersModel.user_id))
+        {
+            Debug.LogError("user_id が null または 空です。LoginProcess を中断します。");
+            yield break;
+        }
         postData.Add(new MultipartFormDataSection("uid", usersModel.user_id));
         UnityWebRequest request = UnityWebRequest.Post(GameUtil.Uri.Login, postData);
         yield return request.SendWebRequest();
@@ -224,9 +220,17 @@ public class TitleManager : MonoBehaviour
             startButton.interactable = true;
             yield break;
         }
-        
+        Debug.Log("ログイン成功。ホーム画面に移行する。");
         // ログイン成功、ホーム画面へ
         Users.SetLastLogin(usersModel.user_id);
+        //StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Login, postData, null));
+        // マスタデータを取得
+        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, postData, null));
+        List<IMultipartFormSection> buyform = new();
+        buyform.Add(new MultipartFormDataSection("uid", usersModel.user_id));
+        //buyform.Add(new MultipartFormDataSection("pid", paymentShop.product_id));
+        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Buy_Currency, buyform, null));
+        Debug.Log("Walletsデータ登録をしました。" + GameUtil.Uri.Buy_Currency);
         GameUtil.FadeManager.Instance.LoadScene("HomeScene");
     }
 

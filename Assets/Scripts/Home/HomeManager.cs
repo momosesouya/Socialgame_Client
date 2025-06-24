@@ -5,6 +5,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System;
 
 public class HomeManager : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class HomeManager : MonoBehaviour
     [SerializeField] Slider staminaBar;
     [SerializeField] TextMeshProUGUI currentStamina;
     [SerializeField] TextMeshProUGUI maxStamina;
+    [SerializeField] TextMeshProUGUI freeAmount;
+    [SerializeField] TextMeshProUGUI paidAmount;
     [SerializeField] GameObject errorPanel;
 
     UsersModel usersModel;
@@ -23,16 +26,24 @@ public class HomeManager : MonoBehaviour
     void Awake()
     {
         usersModel = Users.Get();
-        walletsModel = Wallets.Get();
     }
 
     void Start()
     {
+        walletsModel = Wallets.Get(usersModel.user_id);
         StartCoroutine(HomeProcess());
     }
 
     void Update()
     {
+    }
+
+    public void GetHomeData()
+    {
+        List<IMultipartFormSection> homeForm = new();
+        string user_id = Users.Get().user_id;
+        homeForm.Add(new MultipartFormDataSection("uid", user_id));
+        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, homeForm, null));
     }
 
     /// <summary>
@@ -65,12 +76,16 @@ public class HomeManager : MonoBehaviour
             maxStamina.text = usersModel.max_stamina.ToString();
             staminaBar.maxValue = usersModel.max_stamina;
             staminaBar.value = usersModel.last_stamina;
+            freeAmount.text = walletsModel.free_amount.ToString();
+            paidAmount.text = walletsModel.paid_amount.ToString();
         }
     }
 
-    void StaminaUpdated()
+    public void RefreshWalletsText()
     {
-
+        walletsModel = Wallets.Get(usersModel.user_id);
+        freeAmount.text = walletsModel.free_amount.ToString();
+        paidAmount.text = walletsModel.paid_amount.ToString();
     }
 
     /// <summary>

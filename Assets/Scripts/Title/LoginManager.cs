@@ -15,10 +15,6 @@ public class LoginManager : MonoBehaviour
 
     UsersModel usersModel;
 
-    bool isExistAccount = false; // アカウントデータが存在するか
-
-
-
     /// <summary>
     /// 通信失敗パネルを開く
     /// </summary>

@@ -43,7 +43,9 @@ public static class Users
     /// </summary>
     public static void RegistUserinfo(UsersModel model)
     {
-        // 日本語対応
+        Debug.Log($"RegistUserinfo(): user_id = {model.user_id}, user_name = {model.user_name}");
+
+        // プリペアードステートメント化
         string query = "insert or replace into users (user_id, user_name, max_stamina, last_stamina, stamina_updated, last_login) " +
                    "values (@user_id, @user_name, @max_stamina, @last_stamina, datetime(@stamina_updated), datetime(@last_login))";
         Dictionary<string, object> param = new Dictionary<string, object>()
@@ -58,6 +60,7 @@ public static class Users
         
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         sqlDB.ExecuteQuery(query, param);
+        Debug.Log("SQLiteにユーザーを登録しました: " + model.user_id);
     }
 
     /// <summary>
@@ -68,6 +71,7 @@ public static class Users
         string getQuery = "select * from users limit 1";
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         DataTable dataTable = sqlDB.ExecuteQuery(getQuery);
+
         UsersModel usersModel = new UsersModel();
         foreach (DataRow dr in dataTable.Rows)
         {

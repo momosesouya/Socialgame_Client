@@ -12,6 +12,10 @@ namespace GameUtil
         public const string Register = "http://localhost/api/register";
         ///<summary>ホーム</summary>
         public const string Home = "http://localhost/api/home";
+        ///<summary>マスタデータチェックURL</summary>
+        public const string Master_Check_URL = "http://localhost/api/masterCheck";
+        ///<summary>マスタデータ取得URL </summary>
+        public const string Master_Get_URL = "http://localhost/api/masterGet";
         ///<summary>ウォレット</summary>
         public const string Wallet = "http://localhost/api/home";
         ///<summary>通貨購入</summary>
