@@ -43,8 +43,6 @@ public static class Users
     /// </summary>
     public static void RegistUserinfo(UsersModel model)
     {
-        Debug.Log($"RegistUserinfo(): user_id = {model.user_id}, user_name = {model.user_name}");
-
         // プリペアードステートメント化
         string query = "insert or replace into users (user_id, user_name, max_stamina, last_stamina, stamina_updated, last_login) " +
                    "values (@user_id, @user_name, @max_stamina, @last_stamina, datetime(@stamina_updated), datetime(@last_login))";

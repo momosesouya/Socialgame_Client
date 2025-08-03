@@ -10,6 +10,7 @@ public class WalletsModel
     public int paid_amount;
 }
 
+
 public class Wallets
 {
     /// <summary>
@@ -32,8 +33,6 @@ public class Wallets
     /// </summary>
     public static void RegistWalletinfo(WalletsModel walletsModel, string user_id)
     {
-        Debug.Log($"[Wallets] Insert or Replace user_id: {user_id}, free: {walletsModel.free_amount}, paid: {walletsModel.paid_amount}");
-
         // プリペアードステートメント化
         string query = "insert or replace into user_wallets(user_id, free_amount, paid_amount) " +
                         "values (@user_id, @free_amount, @paid_amount)";
@@ -50,9 +49,10 @@ public class Wallets
     /// <summary>
     /// テーブル取得
     /// </summary>
-    public static WalletsModel Get(string user_id)
+    public static WalletsModel Get()
     {
-        string getQuery = $"select * from user_wallets where user_id = \"{user_id}\"";
+        string getQuery = $"select * from user_wallets";
+        //string getQuery = $"select * from user_wallets where user_id = \"{user_id}\"";
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         DataTable dataTable = sqlDB.ExecuteQuery(getQuery);
         WalletsModel walletsModel = new WalletsModel();

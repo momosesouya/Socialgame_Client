@@ -21,8 +21,15 @@ public class PaymentShopModel
     public int price;           // 販売価格
 }
 
+/// <summary>
+/// payment_shopsテーブル
+/// 通貨ショップ
+/// </summary>
 public class PaymentShops
 {
+    /// <summary>
+    /// テーブル生成
+    /// </summary>
     public static void CreateShopTable()
     {
         string createQuery = "create table if not exists payment_shops (" +
@@ -36,8 +43,10 @@ public class PaymentShops
         sqlDB.ExecuteQuery(createQuery);
     }
 
-
-
+    /// <summary>
+    /// 新規登録
+    /// </summary>
+    /// <param name="payment_model_list"></param>
     public static void RegistShopInfo(PaymentShopModel[] payment_model_list)
     {
         foreach (PaymentShopModel paymentShopModel in payment_model_list)
@@ -57,7 +66,10 @@ public class PaymentShops
         }
     }
 
-    //全ての商品を取得
+    /// <summary>
+    /// 全ての商品を取得
+    /// </summary>
+    /// <returns></returns>
     public static PaymentShopModel[] GetShopDataAll()
     {
         List<PaymentShopModel> list = new();
@@ -77,7 +89,11 @@ public class PaymentShops
         return list.ToArray(); // Listに変換して返す
     }
 
-    // 指定された商品IDの商品を取得
+    /// <summary>
+    /// 指定された商品IDの商品を取得
+    /// </summary>
+    /// <param name="product_id"></param>
+    /// <returns></returns>
     public static PaymentShopModel GetShopData(int product_id)
     {
         PaymentShopModel paymentShopsModel = new();

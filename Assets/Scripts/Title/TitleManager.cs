@@ -15,6 +15,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] GameObject registerFaildPanel;
     [SerializeField] GameObject registerCompletePanel;
     [SerializeField] GameObject confirmPanel;
+    [SerializeField] GameObject completeMasterPanel;
     [SerializeField] InputField inputName;
     [SerializeField] TextMeshProUGUI errMsg;
     [SerializeField] TextMeshProUGUI failedMsg;
@@ -22,7 +23,8 @@ public class TitleManager : MonoBehaviour
 
     UsersModel usersModel;
     WalletsModel walletsModel;
-    PaymentShopModel paymentShopModel;
+    WeaponsModel weaponsModel;
+    ItemsModel[] itemsModel;
 
 
     bool isExistAccount = false; // アカウントデータが存在するか
@@ -35,10 +37,22 @@ public class TitleManager : MonoBehaviour
         {
             using (File.Create(DBPath)) { }
         }
+
         // SQLiteテーブル生成
+        // インスタンステーブル
         Users.CreateTable();
         Wallets.CreateTable();
-        PaymentShops.CreateShopTable();
+        Weapons.CreateWeaponModel();
+        Items.CreateItemModel();
+        // マスタテーブル
+        PaymentShops.CreateShopTable();               // ショップテーブル
+        GachaPeriods.CreateGachaPeriodTable();        // ガチャ期間テーブル
+        GachaWeapons.CreateGachaTable();              // 武器ガチャテーブル
+        MasterWeapons.CreateWeaponMasterTable();      // 武器マスタテーブル
+        WeaponCategories.CreateWeaponCategoryTable(); // 武器カテゴリーテーブル
+        WeaponRarities.CreateRarityTable();           // 武器レアリティテーブル
+        MasterItems.CreateItemMasterTable();          // アイテムマスタテーブル
+        ItemCategories.CreateItemCategoryTable();     // アイテムカテゴリーテーブル
     }
 
     void Start()
@@ -50,7 +64,9 @@ public class TitleManager : MonoBehaviour
 
         // ユーザーデータ取得
         usersModel = Users.Get();
-        walletsModel = Wallets.Get(usersModel.user_id);
+        walletsModel = Wallets.Get();
+        weaponsModel = Weapons.Get(usersModel.user_id);
+        itemsModel = Items.GetItemDataAll();
         if (usersModel.user_id == null)
         {
             // アカウントなし
@@ -80,7 +96,7 @@ public class TitleManager : MonoBehaviour
         {
             // ユーザーデータ取得(保持)
             usersModel = Users.Get();
-            walletsModel = Wallets.Get(usersModel.user_id);
+            walletsModel = Wallets.Get();
 
             registerPanel.SetActive(false);
             confirmPanel.SetActive(false);
@@ -145,9 +161,9 @@ public class TitleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 登録失敗パネルを閉じる
+    /// 開いているパネルを閉じる
     /// </summary>
-    public void CloseRegisterFailed()
+    public void CloseAllPanel()
     {
         registerFaildPanel.SetActive(false);
     }
@@ -175,21 +191,34 @@ public class TitleManager : MonoBehaviour
         yield return null;
     }
 
+    public IEnumerator SuccessMasterPannel()
+    {
+        completeMasterPanel.SetActive(true);
+
+        yield return new WaitForSeconds(2);
+
+        completeMasterPanel.SetActive(false);
+    }
+
     /// 登録処理
     /// </summary>
     IEnumerator RegisterProcess()
     {
-        List<IMultipartFormSection> postData = new List<IMultipartFormSection>();
-        postData.Add(new MultipartFormDataSection("un", registerName.text));
-        
-        // SQLiteに登録
-        yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Register, postData, () => {}));
+        List<IMultipartFormSection> postData = new List<IMultipartFormSection>
+        {
+            new MultipartFormDataSection("un", registerName.text)
+        };
 
-        // 登録完了
-        Debug.Log("登録完了");
-        isExistAccount = true;
-        confirmPanel.SetActive(false);
-        registerCompletePanel.SetActive(true);
+        // SQLiteに登録
+        yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Register, postData, () => 
+        {
+            // 登録完了
+            Debug.Log("登録完了");
+            isExistAccount = true;
+            confirmPanel.SetActive(false);
+            registerCompletePanel.SetActive(true);
+        }));
+
     }
 
 
@@ -223,14 +252,6 @@ public class TitleManager : MonoBehaviour
         Debug.Log("ログイン成功。ホーム画面に移行する。");
         // ログイン成功、ホーム画面へ
         Users.SetLastLogin(usersModel.user_id);
-        //StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Login, postData, null));
-        // マスタデータを取得
-        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, postData, null));
-        List<IMultipartFormSection> buyform = new();
-        buyform.Add(new MultipartFormDataSection("uid", usersModel.user_id));
-        //buyform.Add(new MultipartFormDataSection("pid", paymentShop.product_id));
-        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Buy_Currency, buyform, null));
-        Debug.Log("Walletsデータ登録をしました。" + GameUtil.Uri.Buy_Currency);
         GameUtil.FadeManager.Instance.LoadScene("HomeScene");
     }
 

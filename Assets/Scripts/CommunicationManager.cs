@@ -3,11 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
+using static TitleManager;
 
-[Serializable]
 public class ResponseObjects
 {
     // マスタデータ
@@ -15,9 +14,24 @@ public class ResponseObjects
     public int Master_data_version { get; set; }
     public UsersModel users;
     public WalletsModel wallets;
+    public ItemsModel[] items;
+    [JsonProperty("weapons")]
+    public WeaponsModel[] weapons { get; set; }
 
     // マスタデータ
     public PaymentShopModel[] payment_shop;
+    public GachaWeaponModel[] gacha_weapon;
+    public GachaPeriodModel[] gacha_period;
+    public WeaponMasterModel[] weapon_master;
+    public WeaponCategoryModel[] weapon_category;
+    public WeaponRarityModel[] weapon_rarity;
+    public ItemMasterModel[] item_master;
+    public ItemCategoryModel[] item_category;
+
+    // ガチャ用
+    public int[] new_weapons;
+    public string gacha_result;
+    public int fragment_num;
 
     public string errcode;
 }
@@ -59,15 +73,42 @@ public class CommunicationManager : MonoBehaviour
     /// <param name="responseObjects"></param>
     static void UpdateWalletData(ResponseObjects responseObjects)
     {
-        UsersModel usersModel = Users.Get();
         if (responseObjects.wallets != null)
         {
-            Debug.Log("ウォレット更新: " + responseObjects.wallets.paid_amount);
+            UsersModel usersModel = Users.Get();
             Wallets.RegistWalletinfo(responseObjects.wallets, usersModel.user_id);
         }
         else
         {
             Debug.LogWarning("responseObjects.wallets is null");
+        }
+    }
+
+    /// <summary>
+    /// 武器情報更新
+    /// </summary>
+    /// <param name="responseObjects"></param>
+    static void UpdateWeaponData(ResponseObjects responseObjects)
+    {
+        if (responseObjects.weapons != null)
+        {
+            UsersModel usersModel = Users.Get();
+            Debug.Log("武器更新: " + responseObjects.weapons);
+            Weapons.RegistWeaponInfo(responseObjects.weapons, usersModel.user_id);
+        }
+    }
+
+    /// <summary>
+    /// アイテム情報更新
+    /// </summary>
+    /// <param name="responseObjects"></param>
+    static void UpdateItemData(ResponseObjects responseObjects)
+    {
+        if (responseObjects.items != null)
+        {
+            UsersModel usersModel = Users.Get();
+            Debug.Log("アイテム更新: " + responseObjects.items);
+            Items.RegistItemInfo(responseObjects.items, usersModel.user_id);
         }
     }
 
@@ -86,6 +127,41 @@ public class CommunicationManager : MonoBehaviour
             PaymentShops.RegistShopInfo(responseObjects.payment_shop);
             Debug.Log("ショップのデータを登録しました。");
         }
+        if (responseObjects.gacha_period != null)
+        {
+            GachaPeriods.RegistGachaPeriodInfo(responseObjects.gacha_period);
+            Debug.Log("ガチャ期間データを登録しました。");
+        }
+        if (responseObjects.gacha_weapon != null)
+        {
+            GachaWeapons.RegistGachaInfo(responseObjects.gacha_weapon);
+            Debug.Log("武器ガチャデータを登録しました。");
+        }
+        if (responseObjects.weapon_master != null)
+        {
+            MasterWeapons.RegistWeaponMasterInfo(responseObjects.weapon_master);
+            Debug.Log("武器データを登録しました。");
+        }
+        if (responseObjects.weapon_category != null)
+        {
+            WeaponCategories.RegistWeaponCategoryInfo(responseObjects.weapon_category);
+            Debug.Log("武器カテゴリーデータを登録しました。");
+        }   
+        if (responseObjects.weapon_rarity != null)
+        {
+            WeaponRarities.RegistWeaponRarityInfo(responseObjects.weapon_rarity);
+            Debug.Log("武器レアリティデータを登録しました。");
+        }
+        if (responseObjects.item_master != null)
+        {
+            MasterItems.RegistItemMasterInfo(responseObjects.item_master);
+            Debug.Log("アイテムデータを登録しました。");
+        }
+        if (responseObjects.item_category != null)
+        {
+            ItemCategories.RegistItemCategoryInfo(responseObjects.item_category);
+            Debug.Log("アイテムカテゴリーデータを登録しました。");
+        }
         Debug.Log("UpdateMasterData 終了");
     }
 
@@ -97,14 +173,22 @@ public class CommunicationManager : MonoBehaviour
         switch (connectURL)
         {
             case GameUtil.Uri.Login:
-                Debug.Log("ConnectMove: payment_shop によるマスタデータ更新を実行");
-                UpdateMasterData(responseObjects);
+                UpdateUserData(responseObjects);
                 break;
-            case GameUtil.Uri.Register:
             case GameUtil.Uri.Home:
-            case GameUtil.Uri.Stamina_Recovery:
+            //case GameUtil.Uri.Stamina_Recovery:
                 UpdateUserData(responseObjects);
                 UpdateWalletData(responseObjects);
+                UpdateWeaponData(responseObjects);
+                UpdateItemData(responseObjects);
+                break;
+            case GameUtil.Uri.Register:
+                UpdateUserData(responseObjects);
+                UpdateWalletData(responseObjects);
+                UpdateItemData(responseObjects);
+                break;
+            case GameUtil.Uri.Stamina_Consumption:
+                UpdateUserData(responseObjects);
                 break;
             case GameUtil.Uri.Buy_Currency:
                 UpdateWalletData(responseObjects);
@@ -136,7 +220,7 @@ public class CommunicationManager : MonoBehaviour
                         var sectionData = param.sectionData;
                         Debug.Log($"Parameter Name: {sectionName}, Parameter Value: {System.Text.Encoding.UTF8.GetString(sectionData)}");
                     }
-                    // フォールバックする処理を作成したらここに追加する
+                    // フォールバックする処理を作成したらここに追加
                     Debug.LogError("URL:" + connectURL + " のURLに接続した際にエラーが発生 " + webRequest.error);
                     yield break;
                 }
@@ -145,17 +229,6 @@ public class CommunicationManager : MonoBehaviour
             {
                 // レスポンスの取得
                 string text = webRequest.downloadHandler.text;
-                Debug.Log("※URL:" + connectURL + "レスポンス : " + text);
-                Debug.Log("=== [Raw Response Text] ===");
-                Debug.Log(text);
-                if (!text.Contains("\"payment_shop\""))
-                {
-                    Debug.LogWarning("[Check] 'payment_shop' は JSON に含まれていません。");
-                }
-                else
-                {
-                    Debug.Log("[Check] 'payment_shop' が JSON に含まれています。");
-                }
 
                 // エラーの場合
                 if (text.All(char.IsNumber))
@@ -177,40 +250,9 @@ public class CommunicationManager : MonoBehaviour
                     yield break;
                 }
 
-                // SQLiteへの保存処理
-                //ResponseObjects responseObjects = JsonUtility.FromJson<ResponseObjects>(text);
-                //ConnectMove(connectURL, responseObjects);
-                //if (responseObjects.errcode != null)
-                //{
-                //    // フォールバックする処理を作成したらここに追加する
-                //}
-                MasterDataResponse masterData = JsonConvert.DeserializeObject<MasterDataResponse>(text);
+                // デシリアライズでSQLiteに保存
                 ResponseObjects responseObjects = JsonConvert.DeserializeObject<ResponseObjects>(text);
-
-
-                try
-                {
-                    responseObjects = JsonConvert.DeserializeObject<ResponseObjects>(text);
-                    Debug.Log("[Check] JsonConvert によるパースに成功しました。");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("[Error] JSONのパースに失敗: " + e.Message);
-                    yield break;
-                }
-
-                if (responseObjects.payment_shop == null)
-                {
-                    Debug.LogWarning("[Check] responseObjects.payment_shop は null です。");
-                }
-                else
-                {
-                    Debug.Log("[Check] payment_shop の件数: " + responseObjects.payment_shop.Length);
-                    foreach (var shop in responseObjects.payment_shop)
-                    {
-                        Debug.Log($"[Shop] ID: {shop.product_id}, Name: {shop.product_name}"); // モデルのフィールドに応じて修正
-                    }
-                }
+                //ResponseObjects responseObjects = JsonUtility.FromJson<ResponseObjects>(webRequest.downloadHandler.text);
 
                 ConnectMove(connectURL, responseObjects);
 

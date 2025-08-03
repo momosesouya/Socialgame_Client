@@ -18,6 +18,8 @@ public class BuyPaymentItem : MonoBehaviour
     {
         user_id = Users.Get().user_id;
         SetProductText();
+
+        buySuccessPanel.SetActive(false);
     }
 
     public void PushBuyButton()
@@ -28,7 +30,7 @@ public class BuyPaymentItem : MonoBehaviour
         buyform.Add(new MultipartFormDataSection("pid", product_id));
         Action afterAction = new(() => SuccessBuy());
         StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Buy_Currency, buyform, afterAction));
-        Wallets.Get(user_id);
+        Wallets.Get();
         Invoke("DisplayButton", 2);
     }
 
@@ -42,7 +44,7 @@ public class BuyPaymentItem : MonoBehaviour
         HomeManager homeManager = FindObjectOfType<HomeManager>();
         if (homeManager != null)
         {
-            homeManager.RefreshWalletsText();
+            homeManager.RefreshText();
         }
         else
         {
@@ -56,6 +58,11 @@ public class BuyPaymentItem : MonoBehaviour
     void HideBuySuccessPanel()
     {
         buySuccessPanel.SetActive(false);
+    }
+
+    public void OpenShopPanel()
+    {
+        PaymentShopPanel.SetActive(true);
     }
 
     public void CloseShopPanel()

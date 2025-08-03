@@ -6,12 +6,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System;
+using UnityEngine.PlayerLoop;
+
+public class HomeResponse
+{
+    public int currentStamina;
+}
 
 public class HomeManager : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI userNameText;
     [SerializeField] TextMeshProUGUI totalStaminaText;
-    //[SerializeField] TextMeshProUGUI walletText;
     [SerializeField] Slider staminaBar;
     [SerializeField] TextMeshProUGUI currentStamina;
     [SerializeField] TextMeshProUGUI maxStamina;
@@ -30,20 +35,20 @@ public class HomeManager : MonoBehaviour
 
     void Start()
     {
-        walletsModel = Wallets.Get(usersModel.user_id);
+        walletsModel = Wallets.Get();
         StartCoroutine(HomeProcess());
+        GetHomeData();
     }
 
-    void Update()
-    {
-    }
+    void FixedUpdate() => RefreshText();
 
     public void GetHomeData()
     {
         List<IMultipartFormSection> homeForm = new();
         string user_id = Users.Get().user_id;
         homeForm.Add(new MultipartFormDataSection("uid", user_id));
-        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, homeForm, null));
+        //StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, homeForm, null));
+        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Home, homeForm, null));
     }
 
     /// <summary>
@@ -63,27 +68,23 @@ public class HomeManager : MonoBehaviour
         else
         {
             // 通信に成功した後認証失敗した場合はエラー
-            var requestResult = JsonUtility.FromJson<GameUtil.RequestResult>(request.downloadHandler.text);
-            if (requestResult.result == GameUtil.Common.ErrCode_Auth)
-            {
-                OpenAuthErrorPanel();
-                yield break;
-            }
+            var requestResult = JsonUtility.FromJson<HomeResponse>(request.downloadHandler.text);
 
             // ユーザー情報取得
             userNameText.text = usersModel.user_name;
-            currentStamina.text = usersModel.last_stamina.ToString();
             maxStamina.text = usersModel.max_stamina.ToString();
             staminaBar.maxValue = usersModel.max_stamina;
-            staminaBar.value = usersModel.last_stamina;
+            currentStamina.text = requestResult.currentStamina.ToString();
+            staminaBar.value = requestResult.currentStamina;
             freeAmount.text = walletsModel.free_amount.ToString();
             paidAmount.text = walletsModel.paid_amount.ToString();
         }
     }
 
-    public void RefreshWalletsText()
+    public void RefreshText()
     {
-        walletsModel = Wallets.Get(usersModel.user_id);
+        walletsModel = Wallets.Get();
+        // 通貨更新
         freeAmount.text = walletsModel.free_amount.ToString();
         paidAmount.text = walletsModel.paid_amount.ToString();
     }
