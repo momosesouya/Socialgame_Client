@@ -7,10 +7,11 @@ public class BagSortManager : WeaponBase
     [SerializeField] GameObject items;
     [SerializeField] GameObject lineupButton;
     [SerializeField] GameObject[] itemClone;
+    [SerializeField] GameObject content; // スクロールできる範囲
     [SerializeField] Sprite[] lineUpImage;
     Vector3 referencePoint = new Vector3(0, 0, 0);
 
-    int generateVerticalNum = 4; // 生成する縦の個数
+    int generateVerticalNum = 5; // 生成する縦の個数
     int generateBesideNum = 5;   // 生成する横の個数
     int changeNum = 230;         // 縦横の配置で変化する量
 
@@ -35,7 +36,7 @@ public class BagSortManager : WeaponBase
         SetWeaponParameters(DEFAULTSORT);
     }
 
-    private void OnDisable() => DestroyItemClone();
+    //private void OnDisable() => DestroyItemClone();
 
     // 外部からバッグの情報更新
     public void UpdateBag()
@@ -99,47 +100,26 @@ public class BagSortManager : WeaponBase
     // アイテムを並べて生成する
     public void SortGenerate()
     {
-        int count = 0;
-        for (int i = 0; i < generateVerticalNum; i++)
+        // 先に削除しておく
+        DestroyItemClone();
+
+        for (int i = 0; i < weaponModel.Length; i++)
         {
-            for (int j = 0; j < generateBesideNum; j++)
+            // Content の子として生成
+            GameObject newItem = Instantiate(itemPrefab, content.transform);
+            newItem.name = weaponName[i];
+            WeaponSetting(newItem, weaponId[i]);
+
+            BagItemManager bagItemManager = newItem.GetComponent<BagItemManager>();
+            if (bagItemManager != null)
             {
-                Vector3 setPos = new Vector3(referencePoint.x + (changeNum * j), referencePoint.y - (changeNum * i), 0);
-                if (count < itemClone.Length && itemClone[count] == null)
-                {
-                    itemClone[count] = Instantiate(itemPrefab, setPos, Quaternion.identity);
-                    GameObject currentClone = itemClone[count];
-
-                    if (count < weaponModel.Length)
-                    {
-                        // 武器のデータがあるとき
-                        currentClone.name = weaponName[count].ToString();
-                        WeaponSetting(currentClone, weaponId[count]);
-                        if (currentClone.GetComponent<BagItemManager>() != null)
-                        {
-                            BagItemManager bagItemManager = currentClone.GetComponent<BagItemManager>();
-                            if (bagItemManager != null)
-                            {
-                                bagItemManager.SetParameters(weaponId[count], weaponLevel[count], weaponExp[count], weaponCategory[count], weaponName[count]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // データがないとき
-                        currentClone.name = "";
-                        WeaponSetting(currentClone, 0); // ID:0 など空スロット用処理
-
-                        BagItemManager bagItemManager = currentClone.GetComponent<BagItemManager>();
-                        if (bagItemManager != null)
-                        {
-                            bagItemManager.SetParameters(0, 0, 0, 0, ""); // 空データを渡す
-                            SetEmpty(); // ← 空用の表示切替
-                        }
-                    }
-                    itemClone[count].transform.SetParent(items.transform, false);
-                }
-                count++;
+                bagItemManager.SetParameters(
+                    weaponId[i],
+                    weaponLevel[i],
+                    weaponExp[i],
+                    weaponCategory[i],
+                    weaponName[i]
+                );
             }
         }
     }
@@ -181,13 +161,14 @@ public class BagSortManager : WeaponBase
     // アイテムを削除する
     void DestroyItemClone()
     {
-        for (int i = 0; i < generateVerticalNum; i++)
+        foreach (Transform child in content.transform)
         {
-            for (int j = 0; j < generateBesideNum; j++)
-            {
-                if (itemClone[j] != null) { Destroy(itemClone[j]); }
-            }
+            Destroy(child.gameObject);
         }
+        //for (int i = content.transform.childCount - 1; i >= 0; i--)
+        //{
+        //    Destroy(content.transform.GetChild(i).gameObject);
+        //}
     }
 
     // 並び替えボタンが押されたら
@@ -204,6 +185,7 @@ public class BagSortManager : WeaponBase
     public void PushLineUpButton()
     {
         Image image = lineupButton.transform.GetChild(0).GetComponent<Image>();
+
         if (!sortMode)
         {
             SetWeaponParameters(RARITYSORTASC);

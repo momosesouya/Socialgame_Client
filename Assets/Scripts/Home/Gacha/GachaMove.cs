@@ -89,8 +89,18 @@ public class GachaMove : WeaponBase
             StartCoroutine(ConnectServer(GameUtil.Uri.Gacha_Execute, gachaForm, afterAction));
             
         }
+        // ’Ê‰İ‚ª‘«‚è‚È‚¢ê‡
         else
         {
+            for (int i = 0; i < weaponClone.Length; i++)
+            {
+                if (weaponClone[i] != null)
+                {
+                    Destroy(weaponClone[i]);
+                    weaponClone[i] = null;
+                }
+            }
+
             gachaManager.OpenCurrencyPanel();
         }
     }
