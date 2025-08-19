@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -15,7 +15,7 @@ public class MasterUpdateManager : MonoBehaviour
         List<IMultipartFormSection> masterForm = new List<IMultipartFormSection>();
         string masterVersion = SaveManager.Instance.GetMasterDataVersion().ToString();
         masterForm.Add(new MultipartFormDataSection("mv", masterVersion));
-        // ƒ}ƒXƒ^ƒf[ƒ^‚ğæ“¾
+        // ãƒã‚¹ã‚¿ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
         StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, null));
 
         StartCoroutine(titleManager.SuccessMasterPannel());

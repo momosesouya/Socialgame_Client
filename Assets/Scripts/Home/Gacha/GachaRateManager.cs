@@ -1,19 +1,19 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponData
 {
-    public string rarity;      // ƒŒƒAƒŠƒeƒB
-    public string weapon_name; // •Ší–¼
-    public float rate;         // Šm—¦
+    public string rarity;      // ãƒ¬ã‚¢ãƒªãƒ†ã‚£
+    public string weapon_name; // æ­¦å™¨å
+    public float rate;         // ç¢ºç‡
 }
 
 public class GachaRateManager : MonoBehaviour
 {
     [SerializeField] GameObject gRPanel;
     [SerializeField] GameObject reteRowPrefab;
-    [SerializeField] Transform scrollContent; // ƒXƒNƒ[ƒ‹—Ìˆæ
+    [SerializeField] Transform scrollContent; // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«é ˜åŸŸ
 
     GachaWeaponModel[] gachaWeaponModel;
     public List<WeaponData> weaponsList;

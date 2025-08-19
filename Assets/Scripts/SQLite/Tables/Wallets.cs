@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +14,7 @@ public class WalletsModel
 public class Wallets
 {
     /// <summary>
-    /// ƒe[ƒuƒ‹¶¬
+    /// ãƒ†ãƒ¼ãƒ–ãƒ«ç”Ÿæˆ
     /// </summary>
     public static void CreateTable()
     {
@@ -29,11 +29,11 @@ public class Wallets
     }
 
     /// <summary>
-    /// “o˜^
+    /// ç™»éŒ²
     /// </summary>
     public static void RegistWalletinfo(WalletsModel walletsModel, string user_id)
     {
-        // ƒvƒŠƒyƒA[ƒhƒXƒe[ƒgƒƒ“ƒg‰»
+        // ãƒ—ãƒªãƒšã‚¢ãƒ¼ãƒ‰ã‚¹ãƒ†ãƒ¼ãƒˆãƒ¡ãƒ³ãƒˆåŒ–
         string query = "insert or replace into user_wallets(user_id, free_amount, paid_amount) " +
                         "values (@user_id, @free_amount, @paid_amount)";
         Dictionary<string, object> param = new Dictionary<string, object>()
@@ -47,7 +47,7 @@ public class Wallets
     }
 
     /// <summary>
-    /// ƒe[ƒuƒ‹æ“¾
+    /// ãƒ†ãƒ¼ãƒ–ãƒ«å–å¾—
     /// </summary>
     public static WalletsModel Get()
     {
