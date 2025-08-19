@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +10,7 @@ public class WeaponBase : MonoBehaviour
     {
         Image weaponImage = weapon.transform.GetChild(0).GetComponent<Image>();
         Image weaponBack = weapon.GetComponent<Image>();
-        weaponImage.sprite = Resources.Load<Sprite>(string.Format("WeaponImage/w{0}", weaponId.ToString())); // ResourcesƒtƒHƒ‹ƒ_‚Ì’†‚Ì“Á’è‚Ì‰æ‘œ‚ğæ“¾‚µ‚Ä“ü‚ê‚é
+        weaponImage.sprite = Resources.Load<Sprite>(string.Format("WeaponImage/w{0}", weaponId.ToString())); // Resourcesãƒ•ã‚©ãƒ«ãƒ€ã®ä¸­ã®ç‰¹å®šã®ç”»åƒã‚’å–å¾—ã—ã¦å…¥ã‚Œã‚‹
         Outline outline = weapon.GetComponent<Outline>();
         int rarity = MasterWeapons.GetWeaponMasterData(weaponId).rarity_id;
         switch (rarity)
@@ -38,7 +38,7 @@ public class WeaponBase : MonoBehaviour
         }
     }
 
-    // w’è‚µ‚½”š‚Ìw’è‚ÌŒ…‚Ì”’l‚ğ•Ô‚· QlƒTƒCƒg https://santerabyte.com/c-sharp-get-nth-digit-num/
+    // æŒ‡å®šã—ãŸæ•°å­—ã®æŒ‡å®šã®æ¡ã®æ•°å€¤ã‚’è¿”ã™ å‚è€ƒã‚µã‚¤ãƒˆ https://santerabyte.com/c-sharp-get-nth-digit-num/
     protected int GetNthDigitNum(int num, int digit)
     {
         int currentDigitNum = 1;

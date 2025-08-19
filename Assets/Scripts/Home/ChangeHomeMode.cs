@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class ChangeHomeMode : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class ChangeHomeMode : MonoBehaviour
         gachaManager = FindObjectOfType<GachaManager>();
     }
 
-    // ƒz[ƒ€‚ª‘I‘ğ‚³‚ê‚½
+    // ãƒ›ãƒ¼ãƒ ãŒé¸æŠã•ã‚ŒãŸæ™‚
     public void ChoiceHome()
     {
         homeManager.GetHomeData();
@@ -30,7 +30,7 @@ public class ChangeHomeMode : MonoBehaviour
         bagPanel.SetActive(false);
     }
 
-    // ƒVƒ‡ƒbƒv‚ª‘I‘ğ‚³‚ê‚½
+    // ã‚·ãƒ§ãƒƒãƒ—ãŒé¸æŠã•ã‚ŒãŸæ™‚
     public void ChoiceShop()
     {
         homeManager.GetHomeData();
@@ -41,7 +41,7 @@ public class ChangeHomeMode : MonoBehaviour
         gachaManager.CloseCurrencyPanel();
     }
 
-    // ƒoƒbƒO‚ª‘I‘ğ‚³‚ê‚½
+    // ãƒãƒƒã‚°ãŒé¸æŠã•ã‚ŒãŸæ™‚
     public void ChoiceBag()
     {
         homeManager.GetHomeData();

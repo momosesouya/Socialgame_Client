@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+ï»¿using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,21 +14,21 @@ public class MasterDataResponse
 [Serializable]
 public class PaymentShopModel
 {
-    public int product_id;      // ¤•iID
-    public string product_name; // ¤•i–¼
-    public int paid_currency;   // —L’Ê‰İ”
-    public int bonus_currency;   // ‚¨‚Ü‚¯–³’Ê‰İ
-    public int price;           // ”Ì”„‰¿Ši
+    public int product_id;      // å•†å“ID
+    public string product_name; // å•†å“å
+    public int paid_currency;   // æœ‰å„Ÿé€šè²¨æ•°
+    public int bonus_currency;   // ãŠã¾ã‘ç„¡å„Ÿé€šè²¨
+    public int price;           // è²©å£²ä¾¡æ ¼
 }
 
 /// <summary>
-/// payment_shopsƒe[ƒuƒ‹
-/// ’Ê‰İƒVƒ‡ƒbƒv
+/// payment_shopsãƒ†ãƒ¼ãƒ–ãƒ«
+/// é€šè²¨ã‚·ãƒ§ãƒƒãƒ—
 /// </summary>
 public class PaymentShops
 {
     /// <summary>
-    /// ƒe[ƒuƒ‹¶¬
+    /// ãƒ†ãƒ¼ãƒ–ãƒ«ç”Ÿæˆ
     /// </summary>
     public static void CreateShopTable()
     {
@@ -44,7 +44,7 @@ public class PaymentShops
     }
 
     /// <summary>
-    /// V‹K“o˜^
+    /// æ–°è¦ç™»éŒ²
     /// </summary>
     /// <param name="payment_model_list"></param>
     public static void RegistShopInfo(PaymentShopModel[] payment_model_list)
@@ -67,7 +67,7 @@ public class PaymentShops
     }
 
     /// <summary>
-    /// ‘S‚Ä‚Ì¤•i‚ğæ“¾
+    /// å…¨ã¦ã®å•†å“ã‚’å–å¾—
     /// </summary>
     /// <returns></returns>
     public static PaymentShopModel[] GetShopDataAll()
@@ -86,11 +86,11 @@ public class PaymentShops
             paymentShopsModel.price = int.Parse(dr["price"].ToString());
             list.Add(paymentShopsModel);
         }
-        return list.ToArray(); // List‚É•ÏŠ·‚µ‚Ä•Ô‚·
+        return list.ToArray(); // Listã«å¤‰æ›ã—ã¦è¿”ã™
     }
 
     /// <summary>
-    /// w’è‚³‚ê‚½¤•iID‚Ì¤•i‚ğæ“¾
+    /// æŒ‡å®šã•ã‚ŒãŸå•†å“IDã®å•†å“ã‚’å–å¾—
     /// </summary>
     /// <param name="product_id"></param>
     /// <returns></returns>
