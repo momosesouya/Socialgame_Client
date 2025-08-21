@@ -41,7 +41,7 @@ public class GachaMove : WeaponBase
     }
 
 
-    // 単発ガチャの時の動き
+    // 単発ガチャの時
     public void SingleMove()
     {
         if (isGachaRunning) return;
@@ -67,7 +67,7 @@ public class GachaMove : WeaponBase
         }
     }
 
-    // 十連ガチャの時の動き
+    // 十連ガチャの時
     public void MultiMove()
     {
         if (isGachaRunning) return;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,14 +11,36 @@ public class MasterUpdateManager : MonoBehaviour
         titleManager = FindObjectOfType<TitleManager>();
     }
 
-    public void PushMasterUpdateButton()
+    public void MasterUpdate()
     {
-        List<IMultipartFormSection> masterForm = new List<IMultipartFormSection>();
-        string masterVersion = SaveManager.Instance.GetMasterDataVersion().ToString();
-        masterForm.Add(new MultipartFormDataSection("mv", masterVersion));
-        // マスタデータを取得
-        StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, null));
-
-        StartCoroutine(titleManager.SuccessMasterPannel());
+        StartCoroutine(VersionCheckProcess());
     }
+
+    // バージョンチェック
+    IEnumerator VersionCheckProcess()
+    {
+        string masterVersion = SaveManager.Instance.GetMasterDataVersion().ToString();
+        List<IMultipartFormSection> masterForm = new List<IMultipartFormSection>
+        {
+            new MultipartFormDataSection("mv", masterVersion)
+        };
+        Debug.Log("MasterForm"+ masterForm);
+        yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, () =>
+        {
+            Debug.Log("更新完了パネル表示");
+            // 更新完了パネル表示
+            StartCoroutine(titleManager.SuccessMasterPannel());
+        }));
+    }
+
+    //public void MasterUpdate()
+    //{
+    //    List<IMultipartFormSection> masterForm = new List<IMultipartFormSection>();
+    //    string masterVersion = SaveManager.Instance.GetMasterDataVersion().ToString();
+    //    masterForm.Add(new MultipartFormDataSection("mv", masterVersion));
+    //    // マスタデータを取得
+    //    StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, null));
+
+    //    StartCoroutine(titleManager.SuccessMasterPannel());
+    //}
 }

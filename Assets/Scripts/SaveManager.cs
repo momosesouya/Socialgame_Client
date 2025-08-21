@@ -37,8 +37,7 @@ public class SaveManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        CreateSaveData();
+        filePath = Application.dataPath + FileName;
     }
 
     // ファイル更新共通準備
@@ -47,7 +46,7 @@ public class SaveManager : MonoBehaviour
         bf = new();
         if (filePath == null)
         {
-            filePath = Application.persistentDataPath + FileName;
+            filePath = Application.dataPath + FileName;
         }
         file = File.Create(filePath);
     }
@@ -70,7 +69,7 @@ public class SaveManager : MonoBehaviour
     public bool SaveDataCheck()
     {
         // ファイルがあればtrue
-        if(File.Exists(filePath)) { return true; }
+        if (File.Exists(filePath)) { return true; }
         return false;
     }
 

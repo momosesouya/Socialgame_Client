@@ -12,6 +12,8 @@
 /[Uu]ser[Ss]ettings/
 /[Aa]ssets/service.db
 /[Aa]ssets/service.db.meta
+/[Aa]ssets/savedata.dat
+/[Aa]ssets/savedata.dat.meta
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
