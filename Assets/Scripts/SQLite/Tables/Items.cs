@@ -79,21 +79,14 @@ public class Items
             itemsModel.has_stamina_item = int.Parse(dr["has_stamina_item"].ToString());
             itemsModel.has_exchange_item = int.Parse(dr["has_exchange_item"].ToString());
         }
-        //foreach (DataRow dr in dataTable.Rows)
-        //{
-        //    itemsModel.item_id = int.Parse(dr["item_id"].ToString());
-        //    itemsModel.has_enhancement_item = int.Parse(dr["has_enhancement_item"].ToString());
-        //    itemsModel.has_stamina_item = int.Parse(dr["has_stamina_item"].ToString());
-        //    itemsModel.has_exchange_item = int.Parse(dr["has_exchange_item"].ToString());
-        //}
         return itemsModel;
     }
 
     // アイテム更新
     public static void UpdateItemData(int item_id, int has_enhancement_item, int has_stamina_item = 0, int has_exchange_item = 0)
     {
-        string updateQuery = @"update items set has_enhancement_item = 
-            @has_enhancement_item,
+        string updateQuery = @"update items set 
+            has_enhancement_item = @has_enhancement_item,
             has_stamina_item = @has_stamina_item,
             has_exchange_item = @has_exchange_item
             WHERE item_id = @item_id";

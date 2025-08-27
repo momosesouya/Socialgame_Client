@@ -11,6 +11,7 @@ using UnityEngine.Networking;
 public class GachaMove : WeaponBase
 {
     [SerializeField] GameObject gachaSingleResult, gachaMultiResult;
+    [SerializeField] GameObject gachaNormalRatePanel, gachaRareRatePanel;
     [SerializeField] GameObject resultWeapon;
     [SerializeField] TextMeshProUGUI[] fragmentText;
     [SerializeField] Sprite[] weaponsSprites;
@@ -18,6 +19,7 @@ public class GachaMove : WeaponBase
     [SerializeField] Button resultSingleButton;
     [SerializeField] Button resultMultiButton;
     [SerializeField] Button backMultiButton;
+    [SerializeField] BagSortManager bagSortManager;
 
     bool isGachaRunning = false;
     GameObject[] weaponClone;
@@ -31,9 +33,9 @@ public class GachaMove : WeaponBase
 
     void Start()
     {
-        weaponClone = new GameObject[10];
         gachaSingleResult.SetActive(false);
         gachaMultiResult.SetActive(false);
+        weaponClone = new GameObject[10];
         resultWeapons = new int[10];
         newWeapons = new int[10];
 
@@ -65,6 +67,8 @@ public class GachaMove : WeaponBase
         {
             gachaManager.OpenCurrencyPanel();
         }
+        // バッグ情報更新
+        bagSortManager.UpdateBag();
     }
 
     // 十連ガチャの時
@@ -103,6 +107,8 @@ public class GachaMove : WeaponBase
 
             gachaManager.OpenCurrencyPanel();
         }
+        // バッグ情報更新
+        bagSortManager.UpdateBag();
     }
 
     void SuccessGachaSingle()
@@ -133,11 +139,25 @@ public class GachaMove : WeaponBase
         fragmentText[1].text = string.Format("取得かけら数:{0}個", fragmentNum);
     }
 
+    public void PushRatePanel()
+    {
+        if (gachaId == 100)
+        {
+            gachaNormalRatePanel.SetActive(true);
+        }
+        else
+        {
+            gachaRareRatePanel.SetActive(true);
+        }
+    }
+
     public void PushBackButton()
     {
         gachaSingleResult.SetActive(false);
         Destroy(weaponClone[0]);
         gachaMultiResult.SetActive(false);
+        gachaNormalRatePanel.SetActive(false);
+        gachaRareRatePanel.SetActive(false);
     }
 
     // サーバーからの情報を保存する

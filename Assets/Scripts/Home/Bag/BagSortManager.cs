@@ -36,7 +36,6 @@ public class BagSortManager : WeaponBase
         SetWeaponParameters(DEFAULTSORT);
     }
 
-    //private void OnDisable() => DestroyItemClone();
 
     // 外部からバッグの情報更新
     public void UpdateBag()
@@ -165,10 +164,6 @@ public class BagSortManager : WeaponBase
         {
             Destroy(child.gameObject);
         }
-        //for (int i = content.transform.childCount - 1; i >= 0; i--)
-        //{
-        //    Destroy(content.transform.GetChild(i).gameObject);
-        //}
     }
 
     // 並び替えボタンが押されたら
