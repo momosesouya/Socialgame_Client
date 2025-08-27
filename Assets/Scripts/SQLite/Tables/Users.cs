@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 
 [Serializable]
@@ -55,7 +54,7 @@ public static class Users
             {"@stamina_updated", model.stamina_updated},
             {"@last_login", model.last_login},
         };
-        
+
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         sqlDB.ExecuteQuery(query, param);
         Debug.Log("SQLiteにユーザーを登録しました: " + model.user_id);

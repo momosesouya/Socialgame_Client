@@ -1,8 +1,5 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class GachaPeriodModel

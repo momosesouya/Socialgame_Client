@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class ItemsModel
 {
@@ -62,7 +59,7 @@ public class Items
     public static ItemsModel GetItemData(int item_id)
     {
         string getQuery = "select * from items where item_id = @item_id";
-        Dictionary<string, object> param = new() 
+        Dictionary<string, object> param = new()
         {
             {"@item_id", item_id }
         };

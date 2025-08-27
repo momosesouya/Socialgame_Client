@@ -1,5 +1,5 @@
-﻿#define LOCAL_SERVER
-//#define DEVELOP_SERVER
+﻿//#define LOCAL_SERVER
+#define DEVELOP_SERVER
 
 namespace GameUtil
 {
