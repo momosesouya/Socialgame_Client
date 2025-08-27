@@ -7446,8 +7446,11 @@ MonoBehaviour:
   gachaCanvas: {fileID: 728626802}
   provisionPanel: {fileID: 1004348705}
   notEnoughCurrencyPanel: {fileID: 1488543546}
+  backButton: {fileID: 705587233}
   fragmentText: {fileID: 1479335552}
   amountText: {fileID: 609306342}
+  nBanner: {fileID: 33917091}
+  rBanner: {fileID: 1711873666}
 --- !u!4 &632767141
 Transform:
   m_ObjectHideFlags: 0

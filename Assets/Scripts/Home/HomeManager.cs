@@ -1,12 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Networking;
-using System;
-using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 public class HomeResponse
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -13,7 +11,7 @@ public class SaveData
 
 public class SaveManager : MonoBehaviour
 {
-    public static SaveManager Instance {  get; private set; }
+    public static SaveManager Instance { get; private set; }
 
     // セーブファイルの名前
     const string FileName = "/savedata.dat";

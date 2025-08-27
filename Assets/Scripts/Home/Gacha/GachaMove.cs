@@ -42,6 +42,19 @@ public class GachaMove : WeaponBase
         gachaManager = FindObjectOfType<GachaManager>();
     }
 
+    public void ActiveButton()
+    {
+        if (!resultMultiButton.interactable && !backMultiButton.interactable)
+        {
+            resultMultiButton.interactable = true;
+            backMultiButton.interactable = true;
+        }
+        else
+        {
+            resultMultiButton.interactable = false;
+            backMultiButton.interactable = false;
+        }
+    }
 
     // 単発ガチャの時
     public void SingleMove()
@@ -50,13 +63,13 @@ public class GachaMove : WeaponBase
         isGachaRunning = true;
         resultMultiButton.interactable = false;
 
-        if (Wallets.Get().free_amount + Wallets.Get().paid_amount > 160)
+        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= 160)
         {
             List<IMultipartFormSection> gachaForm = new();
             gachaForm.Add(new MultipartFormDataSection("uid", Users.Get().user_id));
             gachaForm.Add(new MultipartFormDataSection("gCount", "1"));
             gachaForm.Add(new MultipartFormDataSection("gacha_id", gachaId.ToString()));
-            Action afterAction = new(() => 
+            Action afterAction = new(() =>
             {
                 SuccessGachaSingle();
                 isGachaRunning = false;
@@ -66,6 +79,9 @@ public class GachaMove : WeaponBase
         else
         {
             gachaManager.OpenCurrencyPanel();
+            ActiveButton();
+            gachaSingleResult.SetActive(false);
+            isGachaRunning = false;
         }
         // バッグ情報更新
         bagSortManager.UpdateBag();
@@ -79,7 +95,7 @@ public class GachaMove : WeaponBase
         resultMultiButton.interactable = false;
         backMultiButton.interactable = false;
 
-        if (Wallets.Get().free_amount + Wallets.Get().paid_amount > 1600)
+        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= 1600)
         {
             List<IMultipartFormSection> gachaForm = new();
             gachaForm.Add(new MultipartFormDataSection("uid", Users.Get().user_id));
@@ -91,7 +107,7 @@ public class GachaMove : WeaponBase
                 isGachaRunning = false;
             });
             StartCoroutine(ConnectServer(GameUtil.Uri.Gacha_Execute, gachaForm, afterAction));
-            
+
         }
         // 通貨が足りない場合
         else
@@ -106,6 +122,8 @@ public class GachaMove : WeaponBase
             }
 
             gachaManager.OpenCurrencyPanel();
+            gachaMultiResult.SetActive(false);
+            isGachaRunning = false;
         }
         // バッグ情報更新
         bagSortManager.UpdateBag();
@@ -164,7 +182,7 @@ public class GachaMove : WeaponBase
     void GachaSetting(ResponseObjects responseObjects)
     {
         Debug.Log($"[GachaSetting] ガチャID: {gachaId}, 武器数: {responseObjects?.weapons?.Length ?? 0}");
-            
+
         if (responseObjects.weapons != null && responseObjects.new_weapons != null)
         {
             UsersModel usersModel = Users.Get();
@@ -235,9 +253,7 @@ public class GachaMove : WeaponBase
             yield return new WaitForSeconds(0.5f);
         }
         // ボタンをアクティブ
-        resultMultiButton.interactable = true;
-        backMultiButton.interactable = true;
-        yield return null;
+        ActiveButton();
     }
 
     // サーバーに接続する

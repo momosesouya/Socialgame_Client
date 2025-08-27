@@ -1,25 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class GachaManager : MonoBehaviour
 {
     [SerializeField] GameObject nScreen, rScreen, gachaCanvas, provisionPanel, notEnoughCurrencyPanel;
+    [SerializeField] Button backButton;
     [SerializeField] TextMeshProUGUI fragmentText, amountText;
     [SerializeField] Image nBanner, rBanner;
 
     int fragmentItemNum, amountNum;
 
     HomeManager homeManager;
+    GachaMove gachaMove;
 
     void Start()
     {
         gachaCanvas.SetActive(false);
 
         homeManager = FindObjectOfType<HomeManager>();
+        gachaMove = FindObjectOfType<GachaMove>();
     }
 
     void FixedUpdate() => UpdateNum();
@@ -43,8 +43,8 @@ public class GachaManager : MonoBehaviour
         gachaCanvas.SetActive(true);
         nScreen.SetActive(true);
         rScreen.SetActive(false);
-        //nBanner.tintColor = Color.yellow;
-        //rBanner.tintColor = Color.white;
+        nBanner.color = Color.cyan;
+        rBanner.color = Color.white;
     }
 
     // レアガチャが押されたら表示
@@ -52,8 +52,8 @@ public class GachaManager : MonoBehaviour
     {
         nScreen.SetActive(false);
         rScreen.SetActive(true);
-        //nBanner.tintColor = Color.white;
-        //rBanner.tintColor = Color.yellow;
+        nBanner.color = Color.white;
+        rBanner.color = Color.cyan;
     }
 
     // 戻るボタンが押されたら
@@ -69,14 +69,6 @@ public class GachaManager : MonoBehaviour
         provisionPanel.SetActive(true);
     }
 
-    // ガチャ履歴ボタンが押されたら
-    public void PushGachaLogButton()
-    {
-        //gachaLogManager.GetGachaLog();
-        //gachaLogManager.UpdateText();
-        //gachaLogPanel.SetActive(true);
-    }
-
     // ショップに遷移
     public void ShopTransition()
     {
@@ -87,11 +79,14 @@ public class GachaManager : MonoBehaviour
     public void OpenCurrencyPanel()
     {
         notEnoughCurrencyPanel.SetActive(true);
+        backButton.interactable = false;
     }
 
     // 通貨不足パネル非表示
     public void CloseCurrencyPanel()
     {
         notEnoughCurrencyPanel.SetActive(false);
+        backButton.interactable = true;
+        gachaMove.ActiveButton();
     }
 }
