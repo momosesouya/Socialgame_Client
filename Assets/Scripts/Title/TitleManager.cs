@@ -26,6 +26,7 @@ public class TitleManager : MonoBehaviour
     WeaponsModel weaponsModel;
     ItemsModel[] itemsModel;
 
+    MasterVersionCheckManager masterCheckManager;
 
     bool isExistAccount = false; // アカウントデータが存在するか
 
@@ -37,6 +38,12 @@ public class TitleManager : MonoBehaviour
         {
             using (File.Create(DBPath)) { }
         }
+        // SaveDataのファイルチェック
+        if (!SaveManager.Instance.SaveDataCheck())
+        {
+            SaveManager.Instance.CreateSaveData();
+        }
+        
 
         // SQLiteテーブル生成
         // インスタンステーブル
@@ -53,6 +60,8 @@ public class TitleManager : MonoBehaviour
         WeaponRarities.CreateRarityTable();           // 武器レアリティテーブル
         MasterItems.CreateItemMasterTable();          // アイテムマスタテーブル
         ItemCategories.CreateItemCategoryTable();     // アイテムカテゴリーテーブル
+
+        masterCheckManager = FindObjectOfType<MasterVersionCheckManager>();
     }
 
     void Start()
@@ -80,6 +89,9 @@ public class TitleManager : MonoBehaviour
             isExistAccount = true;
             UserId.text = usersModel.user_id.ToString();
         }
+
+        // マスタデータチェック(データが無いか古い場合は更新)
+        masterCheckManager.MasterCheck();
     }
 
     private void Update()
@@ -195,7 +207,7 @@ public class TitleManager : MonoBehaviour
     {
         completeMasterPanel.SetActive(true);
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(5f);
 
         completeMasterPanel.SetActive(false);
     }
@@ -249,6 +261,7 @@ public class TitleManager : MonoBehaviour
             startButton.interactable = true;
             yield break;
         }
+
         Debug.Log("ログイン成功。ホーム画面に移行する。");
         // ログイン成功、ホーム画面へ
         Users.SetLastLogin(usersModel.user_id);

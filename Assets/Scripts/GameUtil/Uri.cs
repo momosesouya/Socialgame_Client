@@ -1,5 +1,5 @@
-﻿//#define LOCAL_SERVER
-#define DEVELOP_SERVER
+﻿#define LOCAL_SERVER
+//#define DEVELOP_SERVER
 
 namespace GameUtil
 {
@@ -18,8 +18,6 @@ namespace GameUtil
         public const string Master_Get_URL = "http://localhost/api/masterGet";
         ///<summary>通貨購入</summary>
         public const string Buy_Currency = "http://localhost/api/buyCurrency";
-        ///<summary>スタミナ回復</summary>
-        //public const string Stamina_Recovery = "http://localhost/api/staminaRecovery";
         ///<summary>スタミナ消費</summary>
         public const string Stamina_Consumption = "http://localhost/api/staminaConsumption";
         ///<summary>ガチャ</summary>

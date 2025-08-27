@@ -83,7 +83,7 @@ public class StaminaConsumption : MonoBehaviour
 
             // アイテムの保存
             ItemsModel item = Items.GetItemData(1002);
-            int updatedNum = item.has_enhancement_item + response.hasItem;
+            int updatedNum = response.hasItem;
             Items.UpdateItemData(1002, updatedNum);
 
             Debug.Log($"スタミナを{5}消費。残り: {currentStamina}、獲得アイテムID: {response.item_id} x{response.hasItem}");

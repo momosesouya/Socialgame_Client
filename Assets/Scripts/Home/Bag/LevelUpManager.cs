@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -6,7 +7,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-    
+
+[Serializable]
+public class LevelUpResponse
+{
+    public int level;
+    public int has_enhancement_item;
+}
 
 public class LevelUpManager : WeaponBase
 {
@@ -15,15 +22,16 @@ public class LevelUpManager : WeaponBase
     [SerializeField] TextMeshProUGUI changeLevelText, hasItemText;
     [SerializeField] Button levelUpButton; // レベルアップボタン
 
-    private int stagedLevelUp = 1; // ＋や－で変動させる準備レベル
-    private int stagedItem = 0; // ＋や－で変動させるアイテム
+    private int stagedLevelUp = 0; // 現在のレベルからの増加数
+    private int stagedItem = 0; // 仮のアイテム数
     private int hasItemCount = 0; // 所持アイテム数
+    private int currentLevel = 0; // 現在のレベル
     private const int itemID = 1002;
     private const int resetItemNum = 0;
 
     string LevelStr = "Lv.";
-    string slashStr = " / ";
-    int weaponId, rarityId, currentLevel;
+    string slashStr = " / ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+    int weaponId, rarityId;
 
     bool isPush = false; // ボタンを押せるか
 
@@ -31,7 +39,7 @@ public class LevelUpManager : WeaponBase
 
     enum UnPushReason
     {
-        NONE = 0,  // 押せる    
+        NONE = 0,  // 押せる
         SHORTAGE,  // 所持数不足
         NOTSELECT, // 選択されていない
         MAX        // 上限に達している
@@ -42,21 +50,13 @@ public class LevelUpManager : WeaponBase
     {
         reinforcePanel.SetActive(false);
         choiceWeaponManager = FindObjectOfType<ChoiceWeaponDataManager>();
-        // アイテム所持数取得
-        hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
+
         levelUpButton.interactable = false;
     }
 
     void Update()
     {
-        //weaponId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).weapon_id;
-        currentLevel = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
-        //rarityId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).rarity_id;
-
-        // UI更新
-        StandbyUpdateUI();
-
-        IsPushLevelUpBUtton();  
+        IsPushLevelUpButton();  
     }
 
     // 武器のレアリティごとのアイテム必要数
@@ -73,17 +73,20 @@ public class LevelUpManager : WeaponBase
         }
     }
 
+    // 強化画面表示
     public void OpenReinforcePanel()
     {
-        stagedLevelUp = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
         weaponId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).weapon_id;
-        //currentLevel = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
         rarityId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).rarity_id;
-        Debug.Log(GetRequiredItemCount(rarityId));
 
         // 武器画像変更
         choiceWeaponManager.SetDetailData(weaponId);
-
+        Debug.Log("リセットしました");
+        currentLevel = Weapons.GetWeaponData(weaponId).level;
+        hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
+        stagedLevelUp = 0;
+        stagedItem = 0;
+        StandbyUpdateUI();
         reinforcePanel.SetActive(true);
     }
 
@@ -95,16 +98,21 @@ public class LevelUpManager : WeaponBase
     // +ボタンの処理
     public void OnPlusButton()
     {
+        Debug.Log("現在のレベル:" + currentLevel);
+
         // 現在のレベルが上限ではないとき
-        if (currentLevel + stagedLevelUp < Weapons.GetWeaponData(weaponId).level_max)
+        if (currentLevel < Weapons.GetWeaponData(weaponId).level_max)
         {
             int cost = GetRequiredItemCount(rarityId);
 
             if (hasItemCount >= cost)
             {
-                stagedLevelUp++;
-                Debug.Log(stagedLevelUp);
+                currentLevel += 1; // 仮のレベルアップ処理
+                stagedLevelUp += 1;
+                Debug.Log("変更時のレベル:" + currentLevel);
+                Debug.Log("stagedLevelUp:" + stagedLevelUp);
                 stagedItem += cost;
+                hasItemCount -= cost;
                 StandbyUpdateUI();
                 currentState = UnPushReason.NONE;
             }
@@ -120,59 +128,66 @@ public class LevelUpManager : WeaponBase
             Debug.Log("レベルが上限です");
         }
     }
+
     // -ボタンの処理
     public void OnMinusButton()
     {
-        if (stagedLevelUp > 0)
+        if (stagedLevelUp > 0 && currentLevel > 0)
         {
-            stagedLevelUp--;
+            currentLevel -= 1;
+            stagedLevelUp -= 1;
             stagedItem -= GetRequiredItemCount(rarityId);
             StandbyUpdateUI();
         }
-
-        if (stagedLevelUp <= 1)
+        else if (stagedLevelUp == 0)
         {
             currentState = UnPushReason.NOTSELECT;
         }
     }
 
     // レベルスキップボタンの処理
-    public void OnMaxButton()
-    {
-        int maxUp = Mathf.Min(
-            (Weapons.GetWeaponData(weaponId).level_max - currentLevel),
-            hasItemCount / GetRequiredItemCount(rarityId)
-        );
-        stagedLevelUp = maxUp;
-        stagedItem = maxUp;
-        StandbyUpdateUI();
-        currentState = UnPushReason.NONE;
-    }
+    //public void OnMaxButton()
+    //{
+    //    int maxUp = Mathf.Min(
+    //        (Weapons.GetWeaponData(weaponId).level_max - currentLevel),
+    //        hasItemCount / GetRequiredItemCount(rarityId)
+    //    );
+    //    currentLevel = maxUp;
+    //    stagedLevelUp = maxUp;
+    //    stagedItem = maxUp;
+    //    StandbyUpdateUI();
+    //    currentState = UnPushReason.NONE;
+    //}
 
-    // レベルリセットボタンの処理
-    public void OnMinButton()
-    {
-        stagedLevelUp = 1;
-        stagedItem = 0;
-        StandbyUpdateUI();
-    }
+    //// レベルリセットボタンの処理
+    //public void OnMinButton()
+    //{
+    //    currentLevel = 1;
+    //    stagedLevelUp = 0;
+    //    stagedItem = 0;
+    //    StandbyUpdateUI();
+    //}
 
     // 強化前のスタンバイ状態でのUI変更
     void StandbyUpdateUI()
     {
-        changeLevelText.text = string.Format("{0}{1}{2}{3}", LevelStr, stagedLevelUp, slashStr, Weapons.GetWeaponData(weaponId).level_max);
-        // 所持アイテム数のUI更新
+        changeLevelText.text = string.Format("{0} {1}{2}{3}", LevelStr, currentLevel, slashStr, Weapons.GetWeaponData(weaponId).level_max);
+        // アイテム数のUI更新
         hasItemText.text = string.Format("{0}{1}{2}", stagedItem, slashStr, hasItemCount);
     }
 
     // 確定したレベルやアイテム数などのUI変更
-    private void UpdateUI()
+    private void ResetUI()
     {
+        stagedLevelUp = 0;
+        stagedItem = 0;
+        currentLevel = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
+        hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
+
         // 武器レベルのUI更新
-        changeLevelText.text = string.Format("{0}{1}{2}{3}", LevelStr, currentLevel, slashStr, Weapons.GetWeaponData(weaponId).level_max);
+        changeLevelText.text = string.Format("{0} {1}{2}{3}", LevelStr, currentLevel, slashStr, Weapons.GetWeaponData(weaponId).level_max);
         // 所持アイテム数のUI更新
         hasItemText.text = string.Format("{0}{1}{2}", resetItemNum, slashStr, hasItemCount);
-
     }
 
     public void PushLevelUpButton()
@@ -181,7 +196,7 @@ public class LevelUpManager : WeaponBase
     }
 
     // ボタンの状態
-    void IsPushLevelUpBUtton()
+    void IsPushLevelUpButton()
     {
         switch (currentState)
         {
@@ -190,7 +205,6 @@ public class LevelUpManager : WeaponBase
                 levelUpButton.interactable = true;
                 break;
             case UnPushReason.SHORTAGE:
-                //StartCoroutine(ResultPanelController.DisplayResultPanel("強化ポイントが足りません"));
                 isPush = false;
                 levelUpButton.interactable = false;
                 break;
@@ -199,7 +213,6 @@ public class LevelUpManager : WeaponBase
                 levelUpButton.interactable = false;
                 break;
             case UnPushReason.MAX:
-                //StartCoroutine(ResultPanelController.DisplayResultPanel("レベル上限です"));
                 isPush = false;
                 levelUpButton.interactable = false;
                 break;
@@ -211,15 +224,14 @@ public class LevelUpManager : WeaponBase
     {
         if (!isPush) { yield break; }
         // 武器データ
-        weaponId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).weapon_id;
+        //weaponId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).weapon_id;
         // 使用するアイテム数
         //int totalUseItemCount = stagedLevelUp + GetRequiredItemCount(rarityId);
-
         List<IMultipartFormSection> levelUpForm = new()
         {
             new MultipartFormDataSection("uid", Users.Get().user_id),
             new MultipartFormDataSection("wid", weaponId.ToString()),
-            new MultipartFormDataSection("count", (GetRequiredItemCount(rarityId) * stagedLevelUp).ToString())
+            new MultipartFormDataSection("add_level", stagedLevelUp.ToString()),
         };
 
         UnityWebRequest request = UnityWebRequest.Post(GameUtil.Uri.LevelUp, levelUpForm);
@@ -233,24 +245,51 @@ public class LevelUpManager : WeaponBase
         }
 
         string json = request.downloadHandler.text;
-        WeaponsModel responseLevel = JsonUtility.FromJson<WeaponsModel>(json);
-        ItemsModel responseItem = JsonUtility.FromJson<ItemsModel>(json);
+        LevelUpResponse response = JsonUtility.FromJson<LevelUpResponse>(json);
 
-        if (responseLevel != null && responseItem != null)
+        if (response != null)
         {
             // サーバーのレスポンスから更新
-            currentLevel = responseLevel.level;
-            hasItemCount = responseItem.has_enhancement_item;
+            currentLevel = response.level;
+            hasItemCount = response.has_enhancement_item;
+            Debug.Log("返ってきたアイテムの数" + response.has_enhancement_item);
 
             // UI更新
-            stagedLevelUp = responseLevel.level;
+            stagedLevelUp = 0;
             //stagedLevelUp = 0;
             stagedItem = 0;
 
-            UpdateUI();
+            // 武器レベル保存
+            WeaponsModel weapon = new WeaponsModel()
+            {
+                weapon_id = weaponId,
+                rarity_id = rarityId,
+                level = currentLevel,
+                level_max = Weapons.GetWeaponData(weaponId).level_max
+            };
+            // 配列にして渡す
+            WeaponsModel[] weapons = new WeaponsModel[] { weapon };
+            Weapons.UpdateWeaponData(weapons , Users.Get().user_id);
+
+            // アイテムの保存
+            ItemsModel item = Items.GetItemData(itemID);
+            int updatedItemNum = response.has_enhancement_item;
+            Items.UpdateItemData(itemID, updatedItemNum);
+
+            ResetUI();
             Debug.Log("レベルアップ通信成功");
-            Debug.Log(responseLevel.level);
-            Debug.Log(responseItem.has_enhancement_item);
+            Debug.Log("新しいレベル:" + response.level);
+            Debug.Log("所持アイテム数:" + updatedItemNum);
+
+            // 武器レベル、所持アイテム数再取得
+            currentLevel = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
+            hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
+
+            currentState = UnPushReason.NOTSELECT;
+        }
+        else
+        {
+            Debug.LogError("レスポンスの内容が想定外: " + json);
         }
     }
 }

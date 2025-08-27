@@ -5,13 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using static TitleManager;
 
 public class ResponseObjects
 {
-    // マスタデータ
-    [JsonProperty("master_data_version")]
-    public int Master_data_version { get; set; }
     public UsersModel users;
     public WalletsModel wallets;
     public ItemsModel[] items;
@@ -117,11 +113,6 @@ public class CommunicationManager : MonoBehaviour
     /// </summary>
     static void UpdateMasterData(ResponseObjects responseObjects)
     {
-        // バージョン保存
-        if (responseObjects.Master_data_version != 0)
-        {
-            SaveManager.Instance.SetMasterDataVersion(responseObjects.Master_data_version);
-        }
         if (responseObjects.payment_shop != null)
         {
             PaymentShops.RegistShopInfo(responseObjects.payment_shop);
