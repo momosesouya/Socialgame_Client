@@ -32,15 +32,4 @@ public class MasterUpdateManager : MonoBehaviour
             StartCoroutine(titleManager.SuccessMasterPannel());
         }));
     }
-
-    //public void MasterUpdate()
-    //{
-    //    List<IMultipartFormSection> masterForm = new List<IMultipartFormSection>();
-    //    string masterVersion = SaveManager.Instance.GetMasterDataVersion().ToString();
-    //    masterForm.Add(new MultipartFormDataSection("mv", masterVersion));
-    //    // マスタデータを取得
-    //    StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, null));
-
-    //    StartCoroutine(titleManager.SuccessMasterPannel());
-    //}
 }

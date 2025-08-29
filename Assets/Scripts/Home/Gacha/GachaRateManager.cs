@@ -26,15 +26,6 @@ public class GachaRateManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        
-    }
-
-    void GetData()
-    {
-    }
-
     public void OpenButton()
     {
         gRPanel.SetActive(true);

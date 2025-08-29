@@ -151,12 +151,6 @@ public class BagSortManager : WeaponBase
         }
     }
 
-    void SetEmpty()
-    {
-    }
-
-
-
     // アイテムを削除する
     void DestroyItemClone()
     {
