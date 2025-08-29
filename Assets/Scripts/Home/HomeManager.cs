@@ -23,7 +23,6 @@ public class HomeManager : MonoBehaviour
 
     UsersModel usersModel;
     WalletsModel walletsModel;
-    bool isReturnTitle = false;
 
     void Awake()
     {
@@ -44,7 +43,6 @@ public class HomeManager : MonoBehaviour
         List<IMultipartFormSection> homeForm = new();
         string user_id = Users.Get().user_id;
         homeForm.Add(new MultipartFormDataSection("uid", user_id));
-        //StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, homeForm, null));
         StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Home, homeForm, null));
     }
 
@@ -66,7 +64,6 @@ public class HomeManager : MonoBehaviour
         {
             // 通信に成功した後認証失敗した場合はエラー
             var requestResult = JsonUtility.FromJson<HomeResponse>(request.downloadHandler.text);
-
             // ユーザー情報取得
             userNameText.text = usersModel.user_name;
             maxStamina.text = usersModel.max_stamina.ToString();

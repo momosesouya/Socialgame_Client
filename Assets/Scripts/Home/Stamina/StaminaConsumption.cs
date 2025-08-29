@@ -16,12 +16,12 @@ public class StaminaResponse
 public class StaminaConsumption : MonoBehaviour
 {
     [SerializeField] Slider staminaBar;
-    [SerializeField] TextMeshProUGUI staminaText;
+    [SerializeField] TextMeshProUGUI staminaText, consumptionText, itemText, errorText;
+    [SerializeField] GameObject questCompletePanel;
     UsersModel usersModel;
 
     int currentStamina;
     int has_enhancement_item;
-    string user_id;
     string consumptionStr = "スタミナを5消費しました";
     string notConsumptionStr = "スタミナが足りません";
     string getItemStr = "武器強化アイテムを獲得しました";
@@ -30,6 +30,8 @@ public class StaminaConsumption : MonoBehaviour
     {
         usersModel = Users.Get();
         has_enhancement_item = Items.GetItemData(1002).has_enhancement_item;
+
+        questCompletePanel.SetActive(false);
     }
 
     void Update()
@@ -43,11 +45,20 @@ public class StaminaConsumption : MonoBehaviour
         if (currentStamina >= 5)
         {
             StartCoroutine(ConsumptionProcess());
+            consumptionText.enabled = true;
+            itemText.enabled = true;
+            errorText.enabled = false;
+            consumptionText.text = string.Format(consumptionStr);
+            itemText.text = string.Format(getItemStr);
         }
         else
         {
-            Debug.Log(notConsumptionStr);
+            errorText.text = string.Format(notConsumptionStr);
+            errorText.enabled = true;
+            consumptionText.enabled = false;
+            itemText.enabled = false;
         }
+        StartCoroutine(QuestPanel(1.5f));
     }
 
 
@@ -94,5 +105,13 @@ public class StaminaConsumption : MonoBehaviour
         {
             Debug.LogWarning("レスポンスの解析に失敗しました");
         }
+
+    }
+
+    IEnumerator QuestPanel(float seconds)
+    {
+        questCompletePanel.SetActive(true);
+        yield return new WaitForSeconds(seconds);
+        questCompletePanel.SetActive(false);
     }
 }

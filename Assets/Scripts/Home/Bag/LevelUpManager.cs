@@ -143,29 +143,6 @@ public class LevelUpManager : WeaponBase
         }
     }
 
-    // レベルスキップボタンの処理
-    //public void OnMaxButton()
-    //{
-    //    int maxUp = Mathf.Min(
-    //        (Weapons.GetWeaponData(weaponId).level_max - currentLevel),
-    //        hasItemCount / GetRequiredItemCount(rarityId)
-    //    );
-    //    currentLevel = maxUp;
-    //    stagedLevelUp = maxUp;
-    //    stagedItem = maxUp;
-    //    StandbyUpdateUI();
-    //    currentState = UnPushReason.NONE;
-    //}
-
-    //// レベルリセットボタンの処理
-    //public void OnMinButton()
-    //{
-    //    currentLevel = 1;
-    //    stagedLevelUp = 0;
-    //    stagedItem = 0;
-    //    StandbyUpdateUI();
-    //}
-
     // 強化前のスタンバイ状態でのUI変更
     void StandbyUpdateUI()
     {
@@ -221,10 +198,6 @@ public class LevelUpManager : WeaponBase
     IEnumerator LevelUp()
     {
         if (!isPush) { yield break; }
-        // 武器データ
-        //weaponId = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).weapon_id;
-        // 使用するアイテム数
-        //int totalUseItemCount = stagedLevelUp + GetRequiredItemCount(rarityId);
         List<IMultipartFormSection> levelUpForm = new()
         {
             new MultipartFormDataSection("uid", Users.Get().user_id),
@@ -254,7 +227,6 @@ public class LevelUpManager : WeaponBase
 
             // UI更新
             stagedLevelUp = 0;
-            //stagedLevelUp = 0;
             stagedItem = 0;
 
             // 武器レベル保存

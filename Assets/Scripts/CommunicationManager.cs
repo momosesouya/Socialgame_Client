@@ -243,7 +243,6 @@ public class CommunicationManager : MonoBehaviour
 
                 // デシリアライズでSQLiteに保存
                 ResponseObjects responseObjects = JsonConvert.DeserializeObject<ResponseObjects>(text);
-                //ResponseObjects responseObjects = JsonUtility.FromJson<ResponseObjects>(webRequest.downloadHandler.text);
 
                 ConnectMove(connectURL, responseObjects);
 
