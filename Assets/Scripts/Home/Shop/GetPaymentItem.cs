@@ -4,14 +4,13 @@ using UnityEngine;
 public class GetPaymentItem : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI paymentText;
+    const int productId = 5001;
 
     void Start()
     {
-        var id = PaymentShops.GetShopData(5001);
-        Debug.Log(id.product_name);
+        var id = PaymentShops.GetShopData(productId);
 
         PaymentShopModel[] lists = PaymentShops.GetShopDataAll();
-        Debug.Log(lists.Length);
         int count = 0;
         foreach (var element in lists)
         {
@@ -19,7 +18,6 @@ public class GetPaymentItem : MonoBehaviour
             {
                 PaymentShopModel paymentShopModel = lists[count];
                 string itemName = string.Format("product_id:{0}", paymentShopModel.product_id);
-                Debug.Log(itemName);
             }
             count++;
         }

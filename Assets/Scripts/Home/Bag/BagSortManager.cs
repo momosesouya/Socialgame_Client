@@ -9,17 +9,14 @@ public class BagSortManager : WeaponBase
     [SerializeField] GameObject[] itemClone;
     [SerializeField] GameObject content; // スクロールできる範囲
     [SerializeField] Sprite[] lineUpImage;
-    Vector3 referencePoint = new Vector3(0, 0, 0);
 
     int generateVerticalNum = 5; // 生成する縦の個数
     int generateBesideNum = 5;   // 生成する横の個数
-    int changeNum = 230;         // 縦横の配置で変化する量
 
     int weaponNum;
 
     int[] weaponId, weaponLevel, weaponExp, weaponCategory;
     [SerializeField] string[] weaponName;
-    string default_name = "no name";
 
     [SerializeField] WeaponsModel[] weaponModel;
 

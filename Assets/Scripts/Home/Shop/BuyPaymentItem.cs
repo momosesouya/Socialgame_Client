@@ -46,10 +46,6 @@ public class BuyPaymentItem : MonoBehaviour
         {
             homeManager.RefreshText();
         }
-        else
-        {
-            Debug.LogWarning("HomeManager が見つかりませんでした。ウォレット表示の更新ができません。");
-        }
 
         buySuccessPanel.SetActive(true);
         Invoke("HideBuySuccessPanel", 2);

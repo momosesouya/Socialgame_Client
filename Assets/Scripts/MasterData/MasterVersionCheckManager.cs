@@ -61,7 +61,6 @@ public class MasterVersionCheckManager : MonoBehaviour
             serverMasterVersion = response.serverVersion;
             responseMessage = response.message.ToString();
             messageText.text = responseMessage;
-            Debug.Log(response.success);
             // レスポンスのsuccessが0なら更新が必要
             if (response.success != successResult)
             {
@@ -71,10 +70,6 @@ public class MasterVersionCheckManager : MonoBehaviour
 
                 SaveManager.Instance.SetMasterDataVersion(serverMasterVersion);
             }
-        }
-        else
-        {
-            Debug.LogWarning("レスポンスがnullです");
         }
     }
 }

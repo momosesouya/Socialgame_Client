@@ -21,6 +21,9 @@ public class GachaMove : WeaponBase
     [SerializeField] Button backMultiButton;
     [SerializeField] BagSortManager bagSortManager;
 
+    private const int gachaSingleCost = 160;
+    private const int gachaMultiCost = 1600;
+
     bool isGachaRunning = false;
     GameObject[] weaponClone;
 
@@ -63,7 +66,7 @@ public class GachaMove : WeaponBase
         isGachaRunning = true;
         resultMultiButton.interactable = false;
 
-        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= 160)
+        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= gachaSingleCost)
         {
             List<IMultipartFormSection> gachaForm = new();
             gachaForm.Add(new MultipartFormDataSection("uid", Users.Get().user_id));
@@ -95,7 +98,7 @@ public class GachaMove : WeaponBase
         resultMultiButton.interactable = false;
         backMultiButton.interactable = false;
 
-        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= 1600)
+        if (Wallets.Get().free_amount + Wallets.Get().paid_amount >= gachaMultiCost)
         {
             List<IMultipartFormSection> gachaForm = new();
             gachaForm.Add(new MultipartFormDataSection("uid", Users.Get().user_id));
@@ -181,8 +184,6 @@ public class GachaMove : WeaponBase
     // サーバーからの情報を保存する
     void GachaSetting(ResponseObjects responseObjects)
     {
-        Debug.Log($"[GachaSetting] ガチャID: {gachaId}, 武器数: {responseObjects?.weapons?.Length ?? 0}");
-
         if (responseObjects.weapons != null && responseObjects.new_weapons != null)
         {
             UsersModel usersModel = Users.Get();
@@ -269,7 +270,6 @@ public class GachaMove : WeaponBase
                 // エラーの場合
                 if (!string.IsNullOrEmpty(webRequest.error))
                 {
-                    Debug.LogError(webRequest.error);
                     yield break;
                 }
             }
@@ -283,13 +283,10 @@ public class GachaMove : WeaponBase
                     switch (text)
                     {
                         case GameUtil.Common.ERROR_MASTER_DATA_UPDATE:
-                            Debug.LogError("マスタの状態が古いようです。[マスタバージョン不整合]");
                             break;
                         case GameUtil.Common.ERROR_DB_UPDATE:
-                            Debug.LogError("サーバーでエラーが発生しました。[データベース更新エラー]");
                             break;
                         default:
-                            Debug.LogError("サーバーでエラーが発生しました。[システムエラー]");
                             break;
                     }
                     yield break;
@@ -297,7 +294,6 @@ public class GachaMove : WeaponBase
 
                 // SQLiteへの保存処理
                 ResponseObjects responseObjects = JsonConvert.DeserializeObject<ResponseObjects>(text);
-                Debug.Log($"レスポンス: + {text}");
                 yield return new WaitForSeconds(0.5f);
                 GachaSetting(responseObjects);
 

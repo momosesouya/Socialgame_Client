@@ -36,7 +36,7 @@ public class HomeManager : MonoBehaviour
         GetHomeData();
     }
 
-    void FixedUpdate() => RefreshText();
+    void Update() => RefreshText();
 
     public void GetHomeData()
     {

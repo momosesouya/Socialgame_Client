@@ -24,10 +24,8 @@ public class MasterUpdateManager : MonoBehaviour
         {
             new MultipartFormDataSection("mv", masterVersion)
         };
-        Debug.Log("MasterForm"+ masterForm);
         yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Master_Get_URL, masterForm, () =>
         {
-            Debug.Log("更新完了パネル表示");
             // 更新完了パネル表示
             StartCoroutine(titleManager.SuccessMasterPannel());
         }));
