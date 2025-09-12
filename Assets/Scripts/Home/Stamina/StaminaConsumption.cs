@@ -25,6 +25,7 @@ public class StaminaConsumption : MonoBehaviour
     string consumptionStr = "スタミナを5消費しました";
     string notConsumptionStr = "スタミナが足りません";
     string getItemStr = "武器強化アイテムを獲得しました";
+    const int usedStamina = 5;
 
     void Start()
     {
@@ -42,7 +43,7 @@ public class StaminaConsumption : MonoBehaviour
     // クエストボタン押下時
     public void StaminaConsumptionMove()
     {
-        if (currentStamina >= 5)
+        if (currentStamina >= usedStamina)
         {
             StartCoroutine(ConsumptionProcess());
             consumptionText.enabled = true;
@@ -75,7 +76,6 @@ public class StaminaConsumption : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("通信エラー: " + request.error);
             yield break;
         }
 
@@ -95,17 +95,7 @@ public class StaminaConsumption : MonoBehaviour
             ItemsModel item = Items.GetItemData(1002);
             int updatedNum = response.hasItem;
             Items.UpdateItemData(1002, updatedNum);
-
-            Debug.Log($"スタミナを{5}消費。残り: {currentStamina}、獲得アイテムID: {response.item_id} x{response.hasItem}");
-
-            Debug.Log(consumptionStr);
-            Debug.Log(getItemStr);
         }
-        else
-        {
-            Debug.LogWarning("レスポンスの解析に失敗しました");
-        }
-
     }
 
     IEnumerator QuestPanel(float seconds)

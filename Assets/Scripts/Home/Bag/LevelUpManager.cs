@@ -79,7 +79,6 @@ public class LevelUpManager : WeaponBase
 
         // 武器画像変更
         choiceWeaponManager.SetDetailData(weaponId);
-        Debug.Log("リセットしました");
         currentLevel = Weapons.GetWeaponData(weaponId).level;
         hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
         stagedLevelUp = 0;
@@ -96,8 +95,6 @@ public class LevelUpManager : WeaponBase
     // +ボタンの処理
     public void OnPlusButton()
     {
-        Debug.Log("現在のレベル:" + currentLevel);
-
         // 現在のレベルが上限ではないとき
         if (currentLevel < Weapons.GetWeaponData(weaponId).level_max)
         {
@@ -107,8 +104,6 @@ public class LevelUpManager : WeaponBase
             {
                 currentLevel += 1; // 仮のレベルアップ処理
                 stagedLevelUp += 1;
-                Debug.Log("変更時のレベル:" + currentLevel);
-                Debug.Log("stagedLevelUp:" + stagedLevelUp);
                 stagedItem += cost;
                 hasItemCount -= cost;
                 StandbyUpdateUI();
@@ -117,24 +112,25 @@ public class LevelUpManager : WeaponBase
             else
             {
                 currentState = UnPushReason.SHORTAGE;
-                Debug.Log("アイテムが不足しています");
             }
         }
         else
         {
             currentState = UnPushReason.MAX;
-            Debug.Log("レベルが上限です");
         }
     }
 
     // -ボタンの処理
     public void OnMinusButton()
     {
+        int cost = GetRequiredItemCount(rarityId);
+
         if (stagedLevelUp > 0 && currentLevel > 0)
         {
             currentLevel -= 1;
             stagedLevelUp -= 1;
-            stagedItem -= GetRequiredItemCount(rarityId);
+            stagedItem -= cost;
+            hasItemCount += cost;
             StandbyUpdateUI();
         }
         else if (stagedLevelUp == 0)
@@ -210,8 +206,6 @@ public class LevelUpManager : WeaponBase
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("通信エラー: " + request.error);
-            Debug.Log(request.downloadHandler.text);
             yield break;
         }
 
@@ -223,7 +217,6 @@ public class LevelUpManager : WeaponBase
             // サーバーのレスポンスから更新
             currentLevel = response.level;
             hasItemCount = response.has_enhancement_item;
-            Debug.Log("返ってきたアイテムの数" + response.has_enhancement_item);
 
             // UI更新
             stagedLevelUp = 0;
@@ -247,19 +240,12 @@ public class LevelUpManager : WeaponBase
             Items.UpdateItemData(itemID, updatedItemNum);
 
             ResetUI();
-            Debug.Log("レベルアップ通信成功");
-            Debug.Log("新しいレベル:" + response.level);
-            Debug.Log("所持アイテム数:" + updatedItemNum);
 
             // 武器レベル、所持アイテム数再取得
             currentLevel = Weapons.GetWeaponData(choiceWeaponManager.WeaponId).level;
             hasItemCount = Items.GetItemData(itemID).has_enhancement_item;
 
             currentState = UnPushReason.NOTSELECT;
-        }
-        else
-        {
-            Debug.LogError("レスポンスの内容が想定外: " + json);
         }
     }
 }

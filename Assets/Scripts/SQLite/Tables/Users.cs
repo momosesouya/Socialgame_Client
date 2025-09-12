@@ -57,7 +57,6 @@ public static class Users
 
         SqliteDatabase sqlDB = new SqliteDatabase(GameUtil.Common.DBFileName);
         sqlDB.ExecuteQuery(query, param);
-        Debug.Log("SQLiteにユーザーを登録しました: " + model.user_id);
     }
 
     /// <summary>

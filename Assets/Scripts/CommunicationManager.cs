@@ -74,10 +74,6 @@ public class CommunicationManager : MonoBehaviour
             UsersModel usersModel = Users.Get();
             Wallets.RegistWalletinfo(responseObjects.wallets, usersModel.user_id);
         }
-        else
-        {
-            Debug.LogWarning("responseObjects.wallets is null");
-        }
     }
 
     /// <summary>
@@ -89,7 +85,6 @@ public class CommunicationManager : MonoBehaviour
         if (responseObjects.weapons != null)
         {
             UsersModel usersModel = Users.Get();
-            Debug.Log("武器更新: " + responseObjects.weapons);
             Weapons.RegistWeaponInfo(responseObjects.weapons, usersModel.user_id);
         }
     }
@@ -103,7 +98,6 @@ public class CommunicationManager : MonoBehaviour
         if (responseObjects.items != null)
         {
             UsersModel usersModel = Users.Get();
-            Debug.Log("アイテム更新: " + responseObjects.items);
             Items.RegistItemInfo(responseObjects.items, usersModel.user_id);
         }
     }
@@ -116,44 +110,35 @@ public class CommunicationManager : MonoBehaviour
         if (responseObjects.payment_shop != null)
         {
             PaymentShops.RegistShopInfo(responseObjects.payment_shop);
-            Debug.Log("ショップのデータを登録しました。");
         }
         if (responseObjects.gacha_period != null)
         {
             GachaPeriods.RegistGachaPeriodInfo(responseObjects.gacha_period);
-            Debug.Log("ガチャ期間データを登録しました。");
         }
         if (responseObjects.gacha_weapon != null)
         {
             GachaWeapons.RegistGachaInfo(responseObjects.gacha_weapon);
-            Debug.Log("武器ガチャデータを登録しました。");
         }
         if (responseObjects.weapon_master != null)
         {
             MasterWeapons.RegistWeaponMasterInfo(responseObjects.weapon_master);
-            Debug.Log("武器データを登録しました。");
         }
         if (responseObjects.weapon_category != null)
         {
             WeaponCategories.RegistWeaponCategoryInfo(responseObjects.weapon_category);
-            Debug.Log("武器カテゴリーデータを登録しました。");
         }   
         if (responseObjects.weapon_rarity != null)
         {
             WeaponRarities.RegistWeaponRarityInfo(responseObjects.weapon_rarity);
-            Debug.Log("武器レアリティデータを登録しました。");
         }
         if (responseObjects.item_master != null)
         {
             MasterItems.RegistItemMasterInfo(responseObjects.item_master);
-            Debug.Log("アイテムデータを登録しました。");
         }
         if (responseObjects.item_category != null)
         {
             ItemCategories.RegistItemCategoryInfo(responseObjects.item_category);
-            Debug.Log("アイテムカテゴリーデータを登録しました。");
         }
-        Debug.Log("UpdateMasterData 終了");
     }
 
     /// <summary>
@@ -209,10 +194,8 @@ public class CommunicationManager : MonoBehaviour
                     {
                         var sectionName = param.sectionName;
                         var sectionData = param.sectionData;
-                        Debug.Log($"Parameter Name: {sectionName}, Parameter Value: {System.Text.Encoding.UTF8.GetString(sectionData)}");
                     }
                     // フォールバックする処理を作成したらここに追加
-                    Debug.LogError("URL:" + connectURL + " のURLに接続した際にエラーが発生 " + webRequest.error);
                     yield break;
                 }
             }
@@ -235,7 +218,6 @@ public class CommunicationManager : MonoBehaviour
                             break;
                         default:
                             string debugTex = string.Format("テキストの内容:{0}", text);
-                            Debug.LogError(debugTex);
                             break;
                     }
                     yield break;

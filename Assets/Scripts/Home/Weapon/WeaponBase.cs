@@ -36,7 +36,6 @@ public class WeaponBase : MonoBehaviour
         }
     }
 
-    // 指定した数字の指定の桁の数値を返す 参考サイト https://santerabyte.com/c-sharp-get-nth-digit-num/
     protected int GetNthDigitNum(int num, int digit)
     {
         int currentDigitNum = 1;

@@ -79,23 +79,17 @@ public class TitleManager : MonoBehaviour
         if (usersModel.user_id == null)
         {
             // アカウントなし
-            Debug.Log("ユーザーデータが見つかりません");
             isExistAccount = false;
             UserId.text = "0";
         }
         else
         {
-            Debug.Log("ユーザーデータ取得完了");
             isExistAccount = true;
             UserId.text = usersModel.user_id.ToString();
         }
 
         // マスタデータチェック(データが無いか古い場合は更新)
         masterCheckManager.MasterCheck();
-    }
-
-    private void Update()
-    {
     }
 
     /// <summary>
@@ -133,7 +127,6 @@ public class TitleManager : MonoBehaviour
         if (inputName.text.Length <= 0 || inputName.text.Length >= 13)
         {
             errMsg.text = GameUtil.Common.ErrMsg_NameInput;
-            Debug.Log("入力エラーです。");
             return;
         }
         StartCoroutine(StopLoding());
@@ -225,7 +218,6 @@ public class TitleManager : MonoBehaviour
         yield return StartCoroutine(CommunicationManager.ConnectServer(GameUtil.Uri.Register, postData, () => 
         {
             // 登録完了
-            Debug.Log("登録完了");
             isExistAccount = true;
             confirmPanel.SetActive(false);
             registerCompletePanel.SetActive(true);
@@ -243,7 +235,6 @@ public class TitleManager : MonoBehaviour
         // user_idが存在しなかった場合
         if (string.IsNullOrEmpty(usersModel.user_id))
         {
-            Debug.LogError("user_id が null または 空です。LoginProcess を中断します。");
             yield break;
         }
         postData.Add(new MultipartFormDataSection("uid", usersModel.user_id));
@@ -251,18 +242,12 @@ public class TitleManager : MonoBehaviour
         yield return request.SendWebRequest();
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("送信先URL: " + GameUtil.Uri.Login);
-            Debug.Log("送信するUID: " + usersModel.user_id);
-            Debug.Log("通信結果: " + request.result);
-            Debug.Log("レスポンスコード: " + request.responseCode);
-            Debug.Log("レスポンス内容: " + request.downloadHandler.text);
             OpenRegisterFailed(GameUtil.Common.ErrMsg_RequestFailed);
             confirmPanel.SetActive(false);
             startButton.interactable = true;
             yield break;
         }
 
-        Debug.Log("ログイン成功。ホーム画面に移行する。");
         // ログイン成功、ホーム画面へ
         Users.SetLastLogin(usersModel.user_id);
         GameUtil.FadeManager.Instance.LoadScene("HomeScene");
